@@ -1,7 +1,22 @@
-/*
- * MainWindow.java
- *
- * Created on 14. august 2008, 14:28
+/* 
+Ophelia, the cat! is a lightweight mediaplayer written in Java. The main goal 
+is(and was) to create a very light and fast mediaplayer 
+with the most wanted features.
+
+Copyright (C) 2008 Tobias W. Kjeldsen; tobias@wkjeldsen.dk
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
 package ophelia.gui;
 
@@ -1053,14 +1068,14 @@ private void jMenuItem_addDirectoryActionPerformed(java.awt.event.ActionEvent ev
 }//GEN-LAST:event_jMenuItem_addDirectoryActionPerformed
 
 private void jLabel_linkHomepageOpheliaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel_linkHomepageOpheliaMouseClicked
-        BareBonesBrowserLaunch.openURL("http://wkjeldsen.dk/ophelia/");
+        BrowserLaunch.openURL("http://wkjeldsen.dk/ophelia/");
 }//GEN-LAST:event_jLabel_linkHomepageOpheliaMouseClicked
 
 private void jMenuItem_checkVersionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_checkVersionActionPerformed
     if (mpController.isNewVersion()) {
         int confirm = JOptionPane.showConfirmDialog(this, "New version is avaliable, launch browser to download?");
         if (confirm == 0) {
-            BareBonesBrowserLaunch.openURL("http://wkjeldsen.dk/ophelia");
+            BrowserLaunch.openURL("http://wkjeldsen.dk/ophelia");
         }
     } else {
         JOptionPane.showMessageDialog(this, "You are running the latest version");
