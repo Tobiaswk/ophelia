@@ -18,34 +18,30 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
-package ophelia.logic;
+package ophelia.mainlogic;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.File;
+import java.io.FileFilter;
 
 /**
  *
  * @author Tobias W. Kjeldsen
  */
-public class UpdateComponent {
+public class SupportedFormatsFilter implements FileFilter {
 
-    private final String versionCheckURL = "http://wkjeldsen.dk/ophelia/Ophelia.version";
+    public boolean accept(File f) {
+        if (f.isDirectory()) {
+            return true;
+        }
 
-    public boolean isNewVersion() {
-        try {
-            URL url = new URL(versionCheckURL);
-            URLConnection urlc = url.openConnection();
-            DataInputStream in = new DataInputStream(urlc.getInputStream()); // To download
-            BufferedReader read = new BufferedReader(new InputStreamReader(in));
-            if (!read.readLine().equals(Settings.getInstance().getOpheliaVersion())) {
+        String extension = f.getAbsolutePath();
+        if (extension != null) {
+            if (extension.endsWith(".mp3") ||
+                    extension.endsWith(".flac")) {
                 return true;
+            } else {
+                return false;
             }
-            read.close();
-        } catch (Exception ex) {
-            return false;
         }
         return false;
     }

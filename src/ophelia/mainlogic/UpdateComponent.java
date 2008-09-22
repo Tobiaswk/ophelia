@@ -18,58 +18,35 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
-package ophelia.logic;
+package ophelia.mainlogic;
 
-import java.io.FileInputStream;
-import org.kc7bfi.jflac.apps.Player;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  *
  * @author Tobias W. Kjeldsen
  */
-public class FLACPlayer {
+public class UpdateComponent {
 
-    private Player player;
+    private final String versionCheckURL = "http://wkjeldsen.dk/ophelia/Ophelia.version";
 
-    public FLACPlayer() {
-    }
-
-    public boolean isPlaying() {
-        if (player != null) {
-            return player.isPlaying();
+    public boolean isNewVersion() {
+        try {
+            URL url = new URL(versionCheckURL);
+            URLConnection urlc = url.openConnection();
+            DataInputStream in = new DataInputStream(urlc.getInputStream()); // To download
+            BufferedReader read = new BufferedReader(new InputStreamReader(in));
+            if (!read.readLine().equals(Settings.getInstance().getOpheliaVersion())) {
+                return true;
+            }
+            read.close();
+        } catch (Exception ex) {
+            return false;
         }
         return false;
-    }
-
-    public boolean isComplete() {
-        if (player != null) {
-            return player.isComplete();
-        }
-        return true;
-    }
-
-    public void play(String filename) throws Exception {
-        try {
-            if (player != null) {
-                player.close();
-                player = null;
-            }
-            player = new Player(new FileInputStream(filename));
-            new Thread(new Playing(player)).start();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void stop() {
-        if (player != null) {
-            player.close();
-        }
-    }
-
-    public void pause() {
-        if (player != null) {
-            player.pause();
-        }
     }
 }

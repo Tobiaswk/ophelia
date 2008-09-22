@@ -30,7 +30,7 @@ import javazoom.jl.decoder.Decoder;
 import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.decoder.SampleBuffer;
-import ophelia.logic.TrackWithID3;
+import ophelia.mainlogic.TrackWithID3;
 
 /**
  * The <code>Player</code> class implements a simple player for playback

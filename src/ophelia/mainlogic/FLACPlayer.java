@@ -18,31 +18,20 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  */
-package ophelia.logic;
+package ophelia.mainlogic;
 
-import java.io.File;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javazoom.jl.player.Player;
+import java.io.FileInputStream;
+import org.kc7bfi.jflac.apps.Player;
 
 /**
  *
  * @author Tobias W. Kjeldsen
  */
-public class MP3Player {
+public class FLACPlayer {
 
     private Player player;
-    private ExecutorService playThread = Executors.newSingleThreadExecutor();
 
-    public MP3Player() {
-        /* the easteregg suprise ;) */
-        if (Settings.getInstance().isEasterEgg()) {
-            try {
-                new Player(this.getClass().getResourceAsStream("cat_1.mp3")).play();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
+    public FLACPlayer() {
     }
 
     public boolean isPlaying() {
@@ -59,31 +48,28 @@ public class MP3Player {
         return true;
     }
 
-    public int getPosition() {
-        return player.getPosition();
-    }
-
-    public void play(String filename) {
+    public void play(String filename) throws Exception {
         try {
             if (player != null) {
-                player.stop();
+                player.close();
+                player = null;
             }
-            player = new Player(new File(filename));
-            playThread.submit(new Playing(player));
+            player = new Player(new FileInputStream(filename));
+            new Thread(new Playing(player)).start();
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public void stop() {
+        if (player != null) {
+            player.close();
         }
     }
 
     public void pause() {
         if (player != null) {
             player.pause();
-        }
-    }
-
-    public void stop() {
-        if (player != null) {
-            player.stop();
         }
     }
 }

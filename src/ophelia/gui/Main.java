@@ -27,11 +27,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import net.roarsoftware.lastfm.scrobble.Scrobbler;
-import ophelia.logic.MediaPlayerController;
-import ophelia.logic.PlaylistController;
-import ophelia.logic.ScrobbleStatus;
-import ophelia.logic.Settings;
-import ophelia.logic.TrackWithID3;
+import ophelia.mainlogic.MediaPlayerController;
+import ophelia.mainlogic.PlaylistController;
+import ophelia.mainlogic.ScrobbleStatus;
+import ophelia.mainlogic.Settings;
+import ophelia.mainlogic.TrackWithID3;
 
 /**
  *
@@ -713,7 +713,7 @@ public class Main extends javax.swing.JFrame {
 
         jMenu_addFiles.setText("File");
 
-        jMenuItem_addFiles.setText("Add files");
+        jMenuItem_addFiles.setText("Add files...");
         jMenuItem_addFiles.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_addFilesActionPerformed(evt);
@@ -721,7 +721,7 @@ public class Main extends javax.swing.JFrame {
         });
         jMenu_addFiles.add(jMenuItem_addFiles);
 
-        jMenuItem_addDirectory.setText("Add directories");
+        jMenuItem_addDirectory.setText("Add directories...");
         jMenuItem_addDirectory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_addDirectoryActionPerformed(evt);
@@ -841,7 +841,7 @@ public class Main extends javax.swing.JFrame {
         jMenu3.setText("Help");
 
         jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/alert.gif"))); // NOI18N
-        jMenuItem1.setText("About");
+        jMenuItem1.setText("About...");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
