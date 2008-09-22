@@ -39,9 +39,9 @@ public class Playlist {
     private boolean indexing;
 
     public Playlist() {
+        this.resultsPlaylist = new ArrayList<TrackWithID3>();
+        this.trackPlaylist = new ArrayList<TrackWithID3>();
         loadPlaylistFile();
-        this.resultsPlaylist = new ArrayList<TrackWithID3>(trackPlaylist.size());
-        this.indexing = false;
     }
 
     public void addTracks(File[] files) {
@@ -95,20 +95,9 @@ public class Playlist {
         return resultsPlaylist.toArray(new TrackWithID3[0]);
     }
 
-    public void loadPlaylistFile(String playlist) {
-        if (trackPlaylist == null) {
-            trackPlaylist = new ArrayList();
-        } else {
-            trackPlaylist.clear();
-        }
-        try {
-            BufferedReader in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlist)));
-            while (in_test.ready()) {
-                trackPlaylist.add(new TrackWithID3(in_test.readLine()));
-            }
-        } catch (Exception ex) {
-            //TODO
-        }
+    public void loadPlaylistFile(String playlistFilename) {
+        indexing = true;
+        new Thread(new TrackIndexing(playlistFilename)).start();
     }
 
     private void loadPlaylistFile() {
@@ -134,9 +123,22 @@ public class Playlist {
     private class TrackIndexing implements Runnable {
 
         private File[] files;
+        private String playlistFilename;
 
+        /**
+         * 
+         * @param this constructor is used when indexing newly added tracks
+         */
         public TrackIndexing(File[] files) {
             this.files = files;
+        }
+
+        /**
+         * 
+         * @param this constructor is used when indexing playlist
+         */
+        public TrackIndexing(String playlistfilename) {
+            this.playlistFilename = playlistfilename;
         }
 
         public void addTracks(File[] files) {
@@ -157,9 +159,24 @@ public class Playlist {
             return;
         }
 
+        public void loadTracks() {
+            try {
+                BufferedReader in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFilename)));
+                while (in_test.ready()) {
+                    trackPlaylist.add(new TrackWithID3(in_test.readLine()));
+                }
+            } catch (Exception ex) {
+                //TODO
+            }
+        }
+
         public void run() {
-            addTracks(files);
-            savePlaylistFile();
+            if (files != null) {
+                addTracks(files);
+                savePlaylistFile();
+            } else {
+                loadTracks();
+            }
             indexing = false;
         }
     }

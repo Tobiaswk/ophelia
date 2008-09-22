@@ -42,7 +42,6 @@ public class Main extends javax.swing.JFrame {
     MediaPlayerController mpController = new MediaPlayerController();
     PlaylistController plController = new PlaylistController();
     ExecutorService progressAnimationThread = Executors.newFixedThreadPool(1);
-    ;
     GUIAnimation progressbarAnimation;
 
     /** Creates new form MainWindow */
@@ -62,8 +61,8 @@ public class Main extends javax.swing.JFrame {
         jDialog_playlistchoose.setSize(520, 300);
         jFrame_about.setSize(400, 310);
         jFrame_settings.setSize(360, 260);
-        jList_playlist1.setListData(plController.getPlaylistTracks());
-        jLabel_playlistcount.setText(plController.getPlaylistStats());
+        /* intial load of playlist on startup */
+        new Thread(new GUIAnimation(1)).start();
     }
 
     /** This method is called from within the constructor to
@@ -1003,7 +1002,7 @@ private void jMenuItem_openPlaylistActionPerformed(java.awt.event.ActionEvent ev
 private void jFileChooser_playlistfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFileChooser_playlistfileActionPerformed
     if (jFileChooser_playlistfile.getDialogType() == JFileChooser.OPEN_DIALOG) {
         plController.loadPlaylistFile(jFileChooser_playlistfile.getSelectedFile().getPath());
-        jList_playlist1.setListData(plController.getPlaylistTracks());
+        new Thread(new GUIAnimation(1)).start();
     } else if (jFileChooser_playlistfile.getDialogType() == JFileChooser.SAVE_DIALOG) {
         plController.savePlaylistFile(jFileChooser_playlistfile.getSelectedFile().getPath());
     }
