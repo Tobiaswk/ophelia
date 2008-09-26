@@ -26,7 +26,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.Vector;
 
 /**
  *
@@ -34,14 +34,16 @@ import java.util.ArrayList;
  */
 public class Playlist {
 
-    private ArrayList<TrackWithID3> trackPlaylist;
-    private ArrayList<TrackWithID3> resultsPlaylist;
+    private Vector<TrackWithID3> trackPlaylist;
+    private Vector<TrackWithID3> resultsPlaylist;
     private boolean indexing;
 
     public Playlist() {
-        this.resultsPlaylist = new ArrayList<TrackWithID3>();
-        this.trackPlaylist = new ArrayList<TrackWithID3>();
-        loadPlaylistFile();
+        this.resultsPlaylist = new Vector<TrackWithID3>();
+        this.trackPlaylist = new Vector<TrackWithID3>();
+        if (Settings.getInstance().isLoadPlaylistStartup()) {
+            loadPlaylistFile();
+        }
     }
 
     public void addTracks(File[] files) {
@@ -50,8 +52,8 @@ public class Playlist {
         new Thread(new TrackIndexing(files)).start();
     }
 
-    public TrackWithID3[] getTracks() {
-        return trackPlaylist.toArray(new TrackWithID3[0]);
+    public Vector getTracks() {
+        return trackPlaylist;
     }
 
     public int getTrackCount() {
@@ -166,7 +168,7 @@ public class Playlist {
                     trackPlaylist.add(new TrackWithID3(in_test.readLine()));
                 }
             } catch (Exception ex) {
-                //TODO
+                ex.printStackTrace();
             }
         }
 
@@ -174,7 +176,7 @@ public class Playlist {
             if (files != null) {
                 addTracks(files);
                 savePlaylistFile();
-            } else {
+            } else if (playlistFilename != null) {
                 loadTracks();
             }
             indexing = false;

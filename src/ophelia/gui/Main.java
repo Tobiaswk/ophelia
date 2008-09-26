@@ -94,6 +94,7 @@ public class Main extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jTextField_playlistName = new javax.swing.JTextField();
+        jCheckBox_loadPlaylistStartup = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jTextField_windowTitle = new javax.swing.JTextField();
@@ -137,6 +138,7 @@ public class Main extends javax.swing.JFrame {
         jMenuItem_addFiles = new javax.swing.JMenuItem();
         jMenuItem_addDirectory = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
+        jMenuItem_openDefaultPlaylist = new javax.swing.JMenuItem();
         jMenuItem_openPlaylist = new javax.swing.JMenuItem();
         jMenuItem_savePlaylist = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JSeparator();
@@ -304,15 +306,28 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        jCheckBox_loadPlaylistStartup.setSelected(Settings.getInstance().isLoadPlaylistStartup());
+        jCheckBox_loadPlaylistStartup.setText("<html>Initialize default playlist on startup (affects startup speed)</html>");
+        jCheckBox_loadPlaylistStartup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBox_loadPlaylistStartupActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel10)
-                .addGap(4, 4, 4)
-                .addComponent(jTextField_playlistName, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jCheckBox_loadPlaylistStartup, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel10)
+                        .addGap(4, 4, 4)
+                        .addComponent(jTextField_playlistName, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -322,7 +337,9 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(jTextField_playlistName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(189, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBox_loadPlaylistStartup)
+                .addContainerGap(164, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("General", jPanel5);
@@ -729,6 +746,14 @@ public class Main extends javax.swing.JFrame {
         jMenu_addFiles.add(jMenuItem_addDirectory);
         jMenu_addFiles.add(jSeparator3);
 
+        jMenuItem_openDefaultPlaylist.setText("Open default playlist");
+        jMenuItem_openDefaultPlaylist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_openDefaultPlaylistActionPerformed(evt);
+            }
+        });
+        jMenu_addFiles.add(jMenuItem_openDefaultPlaylist);
+
         jMenuItem_openPlaylist.setText("Open playlist");
         jMenuItem_openPlaylist.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1067,7 +1092,7 @@ private void jMenuItem_addDirectoryActionPerformed(java.awt.event.ActionEvent ev
 }//GEN-LAST:event_jMenuItem_addDirectoryActionPerformed
 
 private void jLabel_linkHomepageOpheliaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel_linkHomepageOpheliaMouseClicked
-        BrowserLaunch.openURL("http://wkjeldsen.dk/ophelia/");
+    BrowserLaunch.openURL("http://wkjeldsen.dk/ophelia/");
 }//GEN-LAST:event_jLabel_linkHomepageOpheliaMouseClicked
 
 private void jMenuItem_checkVersionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_checkVersionActionPerformed
@@ -1080,6 +1105,15 @@ private void jMenuItem_checkVersionActionPerformed(java.awt.event.ActionEvent ev
         JOptionPane.showMessageDialog(this, "You are running the latest version");
     }
 }//GEN-LAST:event_jMenuItem_checkVersionActionPerformed
+
+private void jCheckBox_loadPlaylistStartupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_loadPlaylistStartupActionPerformed
+    Settings.getInstance().setLoadPlaylistStartup(jCheckBox_loadPlaylistStartup.isSelected());
+}//GEN-LAST:event_jCheckBox_loadPlaylistStartupActionPerformed
+
+private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_openDefaultPlaylistActionPerformed
+    plController.loadPlaylistFile(Settings.getInstance().getDefaultPlaylistName());
+    new Thread(new GUIAnimation(1)).start();
+}//GEN-LAST:event_jMenuItem_openDefaultPlaylistActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1103,6 +1137,7 @@ private void jMenuItem_checkVersionActionPerformed(java.awt.event.ActionEvent ev
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem_lastfmScrobble;
     private javax.swing.JCheckBox jCheckBox_lastfmScrobble;
+    private javax.swing.JCheckBox jCheckBox_loadPlaylistStartup;
     private javax.swing.JCheckBox jCheckBox_trackInWindow;
     private javax.swing.JCheckBox jCheckBox_trayClose;
     private javax.swing.JCheckBox jCheckBox_trayIcon;
@@ -1145,6 +1180,7 @@ private void jMenuItem_checkVersionActionPerformed(java.awt.event.ActionEvent ev
     private javax.swing.JMenuItem jMenuItem_addFiles;
     private javax.swing.JMenuItem jMenuItem_checkVersion;
     private javax.swing.JMenuItem jMenuItem_clearplaylist;
+    private javax.swing.JMenuItem jMenuItem_openDefaultPlaylist;
     private javax.swing.JMenuItem jMenuItem_openPlaylist;
     private javax.swing.JMenuItem jMenuItem_pause;
     private javax.swing.JMenuItem jMenuItem_play;

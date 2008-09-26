@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package ophelia.mainlogic;
 
 import java.io.File;
+import java.util.Vector;
 
 /**
  *
@@ -42,7 +43,7 @@ public class PlaylistController {
         return playlist.getTrackCount();
     }
 
-    public TrackWithID3[] getPlaylistTracks() {
+    public Vector getPlaylistTracks() {
         return playlist.getTracks();
     }
 

@@ -49,6 +49,7 @@ public class Settings {
 
     /* ophelia configuration data */
     private String defaultPlaylistName = "playlist.txt";
+    private boolean loadPlaylistStartup = true;
     private boolean trayIcon = false;
     private boolean trayMinimize = false;
     private boolean trayClose = false;
@@ -88,6 +89,15 @@ public class Settings {
 
     public void setDefaultPlaylistName(String defaultPlaylistName) {
         this.defaultPlaylistName = defaultPlaylistName;
+        eksportLocalSettings();
+    }
+
+    public boolean isLoadPlaylistStartup() {
+        return loadPlaylistStartup;
+    }
+
+    public void setLoadPlaylistStartup(boolean loadPlaylistStartup) {
+        this.loadPlaylistStartup = loadPlaylistStartup;
         eksportLocalSettings();
     }
 
@@ -213,6 +223,7 @@ public class Settings {
                 "<lastfmUsername>" + lasfmUsername + "</lastfmUsername>\n" +
                 "<lastfmPassword>" + lasfmPassword + "</lastfmPassword>\n" +
                 "<defaultPlaylistName>" + defaultPlaylistName + "</defaultPlaylistName>\n" +
+                "<loadPlaylistStartup>" + loadPlaylistStartup + "</loadPlaylistStartup>\n" +
                 "<trayIcon>" + trayIcon + "</trayIcon>\n" +
                 "<trayMinimize>" + trayMinimize + "</trayMinimize>\n" +
                 "<trayClose>" + trayClose + "</trayClose>\n" +
@@ -226,6 +237,7 @@ public class Settings {
             this.lasfmUsername = getSetting("lastfmUsername");
             this.lasfmPassword = getSetting("lastfmPassword");
             this.defaultPlaylistName = getSetting("defaultPlaylistName");
+            this.loadPlaylistStartup = Boolean.parseBoolean(getSetting("loadPlaylistStartup"));
             this.trayIcon = Boolean.parseBoolean(getSetting("trayIcon"));
             this.trayMinimize = Boolean.parseBoolean(getSetting("trayMinimize"));
             this.trayClose = Boolean.parseBoolean(getSetting("trayClose"));
