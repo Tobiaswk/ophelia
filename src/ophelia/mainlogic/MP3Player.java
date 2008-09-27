@@ -69,7 +69,7 @@ public class MP3Player {
                 player.stop();
             }
             player = new Player(new File(filename));
-            playThread.submit(new Playing(player));
+            playThread.submit(new PlayingTask(player));
         } catch (Exception ex) {
             ex.printStackTrace();
         }

@@ -24,8 +24,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Vector;
 
 /**
@@ -36,6 +38,7 @@ public class Playlist {
 
     private Vector<TrackWithID3> trackPlaylist;
     private Vector<TrackWithID3> resultsPlaylist;
+    private int lastPlayedPosition;
     private boolean indexing;
 
     public Playlist() {
@@ -137,10 +140,10 @@ public class Playlist {
 
         /**
          * 
-         * @param this constructor is used when indexing playlist
+         * @param this constructor is used when indexing from playlistfile
          */
-        public TrackIndexing(String playlistfilename) {
-            this.playlistFilename = playlistfilename;
+        public TrackIndexing(String playlistFilename) {
+            this.playlistFilename = playlistFilename;
         }
 
         public void addTracks(File[] files) {
@@ -161,13 +164,16 @@ public class Playlist {
             return;
         }
 
-        public void loadTracks() {
+        public void addTracks(String playlistFilename) {
+            ArrayList<File> result = new ArrayList<File>();
             try {
                 BufferedReader in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFilename)));
                 while (in_test.ready()) {
-                    trackPlaylist.add(new TrackWithID3(in_test.readLine()));
+                    result.add(new File(in_test.readLine()));
                 }
-            } catch (Exception ex) {
+                in_test.close();
+                addTracks(result.toArray(new File[0]));
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
@@ -176,8 +182,8 @@ public class Playlist {
             if (files != null) {
                 addTracks(files);
                 savePlaylistFile();
-            } else if (playlistFilename != null) {
-                loadTracks();
+            } else {
+                addTracks(playlistFilename);
             }
             indexing = false;
         }

@@ -55,7 +55,7 @@ public class FLACPlayer {
                 player = null;
             }
             player = new Player(new FileInputStream(filename));
-            new Thread(new Playing(player)).start();
+            new Thread(new PlayingTask(player)).start();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

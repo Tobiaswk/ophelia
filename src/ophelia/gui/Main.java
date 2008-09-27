@@ -1218,11 +1218,13 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JToolBar jToolBar_statusbar;
     // End of variables declaration//GEN-END:variables
     
+    /**
+     * this baby is responsible for updating various gui elements when playing-
+     * tracks or other processing-heavy jobs */
     class GUIAnimation implements Runnable {
         
         private boolean stop = false;
         private int job;
-        
         /**
          * 
          * @param operation 1 for update of playlist stats
@@ -1235,36 +1237,63 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
         public void stop() {
             stop = true;
         }
-
-        public void run() {
-            if (job == 2) {
+        
+        /**
+         * animating for the progressbar for displaying of track-progress
+         * furthermore it also "shuffless" or do "continues play" on the-
+         * playlist
+         */
+        public void playingAnimation() {
                 jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
                 jLabel_lastfmLastScrobble.setToolTipText("Your last scrobble to last.fm: " + ScrobbleStatus.getInstance().getLastPlayed());
                 TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
+                TrackWithID3 nextTrack = null;
+                if (jList_playlist1.getSelectedIndex() != jList_playlist1.getModel().getSize()) {
+                    nextTrack = (TrackWithID3) jList_playlist1.getModel().getElementAt(jList_playlist1.getSelectedIndex()+1);
+                    System.out.println(nextTrack.getAbsoluteFile().getAbsolutePath());
+                }
                 jProgressBar1.setString(selectedTrack.getOSDStatus());
                 long trackLength = selectedTrack.getLength();
-                int bar_procent = 0;
                 try {
                     if (Settings.getInstance().isTrackInWindowTitle()) {
                         setTitle(Settings.getInstance().getWindowTitleText() + selectedTrack.getTitle());
                     } else {
                         setTitle(Settings.getInstance().getWindowTitleText());
                     }
-                    while (!stop && bar_procent != 100 && trackLength != 0) {
-                        bar_procent = (int) (((double) mpController.getTrackPosition() / 1000) / trackLength * 100);
-                        jProgressBar1.setValue(bar_procent + 1);
+                    while (!stop && !mpController.isComplete() && trackLength != 0) {
+                        jProgressBar1.setValue((int) (((double) mpController.getTrackPosition() / 1000) / trackLength * 100));
                         Thread.sleep(1000);
                     }
+                if (!stop && nextTrack != null) {
+                    mpController.playTrack(nextTrack.getAbsoluteFile().getAbsolutePath());
+                    jList_playlist1.setSelectedValue(nextTrack, true);
+                    if (progressbarAnimation != null) {
+                        progressbarAnimation.stop();
+                    }
+                    progressbarAnimation = new GUIAnimation(2);
+                    progressAnimationThread.submit(progressbarAnimation);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
 
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+        /**
+         * animation displaying indexing-progress of tracks
+         */
+        public void indexingAnimation() {
+            while (plController.isIndexing()) {
+                jLabel_playlistcount.setText("Indexing... " + plController.getTrackCount() + " tracks indexed ");
+            }
+            jLabel_playlistcount.setText(plController.getPlaylistStats());
+            jList_playlist1.setListData(plController.getPlaylistTracks());
+        }
+
+        public void run() {
+            if (job == 2) {
+                playingAnimation();
             } else if (job == 1) {
-                while (plController.isIndexing()) {
-                    jLabel_playlistcount.setText("Indexing... " + plController.getTrackCount() + " tracks indexed ");
-                }
-                jLabel_playlistcount.setText(plController.getPlaylistStats());
-                jList_playlist1.setListData(plController.getPlaylistTracks());
+                indexingAnimation();
             }
         }
     }
