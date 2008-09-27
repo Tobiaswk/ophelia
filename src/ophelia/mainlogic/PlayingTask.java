@@ -26,16 +26,16 @@ import javazoom.jl.player.Player;
  *
  * @author Tobias W. Kjeldsen
  */
-public class Playing implements Runnable {
+public class PlayingTask implements Runnable {
 
     private javazoom.jl.player.Player mp3Playing;
     private org.kc7bfi.jflac.apps.Player flacPlaying;
 
-    public Playing(javazoom.jl.player.Player mp3Playing) {
+    public PlayingTask(javazoom.jl.player.Player mp3Playing) {
         this.mp3Playing = mp3Playing;
     }
 
-    public Playing(org.kc7bfi.jflac.apps.Player flacPlaying) {
+    public PlayingTask(org.kc7bfi.jflac.apps.Player flacPlaying) {
         this.flacPlaying = flacPlaying;
     }
 
