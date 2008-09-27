@@ -95,6 +95,7 @@ public class Main extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         jTextField_playlistName = new javax.swing.JTextField();
         jCheckBox_loadPlaylistStartup = new javax.swing.JCheckBox();
+        jButton2 = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jTextField_windowTitle = new javax.swing.JTextField();
@@ -102,6 +103,7 @@ public class Main extends javax.swing.JFrame {
         jCheckBox_trayIcon = new javax.swing.JCheckBox();
         jCheckBox_trayClose = new javax.swing.JCheckBox();
         jCheckBox_trayMinimize = new javax.swing.JCheckBox();
+        jButton3 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -112,7 +114,7 @@ public class Main extends javax.swing.JFrame {
         jCheckBox_lastfmScrobble = new javax.swing.JCheckBox();
         jDialog_playlistchoose = new javax.swing.JDialog();
         jFileChooser_playlistfile = new javax.swing.JFileChooser();
-        jPopupMenu1 = new javax.swing.JPopupMenu();
+        jButton1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton_addDirectory = new javax.swing.JButton();
@@ -126,7 +128,7 @@ public class Main extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jList_playlist2 = new javax.swing.JList();
         jButton_play = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
+        jButton_stop = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jToolBar_statusbar = new javax.swing.JToolBar();
         jLabel_playlistcount = new javax.swing.JLabel();
@@ -155,6 +157,9 @@ public class Main extends javax.swing.JFrame {
         jMenuItem_play = new javax.swing.JMenuItem();
         jMenuItem_pause = new javax.swing.JMenuItem();
         jMenuItem_stop = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JSeparator();
+        jRadioButtonMenuItem4 = new javax.swing.JRadioButtonMenuItem();
+        jRadioButtonMenuItem5 = new javax.swing.JRadioButtonMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
@@ -314,6 +319,8 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Restore defaults");
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -327,7 +334,8 @@ public class Main extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel10)
                         .addGap(4, 4, 4)
-                        .addComponent(jTextField_playlistName, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE)))
+                        .addComponent(jTextField_playlistName, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE))
+                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -339,7 +347,9 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(jTextField_playlistName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox_loadPlaylistStartup)
-                .addContainerGap(164, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 108, Short.MAX_VALUE)
+                .addComponent(jButton2)
+                .addContainerGap())
         );
 
         jTabbedPane2.addTab("General", jPanel5);
@@ -385,6 +395,8 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        jButton3.setText("Restore defaults");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -404,7 +416,8 @@ public class Main extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField_windowTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE)))
+                        .addComponent(jTextField_windowTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
+                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -422,7 +435,9 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(jCheckBox_trayClose)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox_trayMinimize)
-                .addContainerGap(95, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                .addComponent(jButton3)
+                .addContainerGap())
         );
 
         jTabbedPane2.addTab("Looks", jPanel6);
@@ -510,7 +525,7 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(jPasswordField_lastfmPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton_checkAuthentication)
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("Last.fm", jPanel4);
@@ -523,7 +538,7 @@ public class Main extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+            .addComponent(jTabbedPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jFrame_settingsLayout = new javax.swing.GroupLayout(jFrame_settings.getContentPane());
@@ -557,6 +572,8 @@ public class Main extends javax.swing.JFrame {
         );
 
         jDialog_playlistchoose.getAccessibleContext().setAccessibleParent(null);
+
+        jButton1.setText("jButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(Settings.getInstance().getWindowTitleText());
@@ -596,6 +613,7 @@ public class Main extends javax.swing.JFrame {
 
         jList_playlist1.setBackground(java.awt.SystemColor.control);
         jList_playlist1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jList_playlist1.setSelectionBackground(new java.awt.Color(153, 0, 0));
         jList_playlist1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jList_playlist1MouseClicked(evt);
@@ -632,11 +650,11 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/stop.gif"))); // NOI18N
-        jButton7.setBorder(null);
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
+        jButton_stop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/stop.gif"))); // NOI18N
+        jButton_stop.setBorder(null);
+        jButton_stop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
+                jButton_stopActionPerformed(evt);
             }
         });
 
@@ -681,7 +699,7 @@ public class Main extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7)
+                        .addComponent(jButton_stop)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -711,7 +729,7 @@ public class Main extends javax.swing.JFrame {
                             .addComponent(jButton_play, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1))
                         .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton_stop, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
@@ -835,6 +853,16 @@ public class Main extends javax.swing.JFrame {
             }
         });
         jMenu5.add(jMenuItem_stop);
+        jMenu5.add(jSeparator6);
+
+        jRadioButtonMenuItem4.setSelected(true);
+        jRadioButtonMenuItem4.setText("Continues play");
+        jRadioButtonMenuItem4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/continues.gif"))); // NOI18N
+        jMenu5.add(jRadioButtonMenuItem4);
+
+        jRadioButtonMenuItem5.setText("Shuffle play");
+        jRadioButtonMenuItem5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/shuffle.gif"))); // NOI18N
+        jMenu5.add(jRadioButtonMenuItem5);
 
         jMenuBar1.add(jMenu5);
 
@@ -927,14 +955,15 @@ private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     mpController.pauseTrack();
 }//GEN-LAST:event_jButton8ActionPerformed
 
-private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+private void jButton_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_stopActionPerformed
     mpController.stopTrack();
     jProgressBar1.setValue(0);
     jProgressBar1.setString("");
+    setTitle("");
     if (progressbarAnimation != null) {
         progressbarAnimation.stop();
     }
-}//GEN-LAST:event_jButton7ActionPerformed
+}//GEN-LAST:event_jButton_stopActionPerformed
 
 private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
     jFrame_about.setVisible(true);
@@ -952,6 +981,7 @@ private void jMenuItem_stopActionPerformed(java.awt.event.ActionEvent evt) {//GE
     mpController.stopTrack();
     jProgressBar1.setValue(0);
     jProgressBar1.setString("");
+    setTitle("");
 }//GEN-LAST:event_jMenuItem_stopActionPerformed
 
 private void jMenuItem_clearplaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_clearplaylistActionPerformed
@@ -1128,12 +1158,15 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton_addDirectory;
     private javax.swing.JButton jButton_addFiles;
     private javax.swing.JButton jButton_checkAuthentication;
     private javax.swing.JButton jButton_play;
+    private javax.swing.JButton jButton_stop;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem_lastfmScrobble;
     private javax.swing.JCheckBox jCheckBox_lastfmScrobble;
@@ -1195,11 +1228,12 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPasswordField jPasswordField_lastfmPassword;
-    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem1;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem2;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem3;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem4;
+    private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -1208,6 +1242,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTable jTable1;
@@ -1235,7 +1270,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
         }
 
         public void stop() {
-            stop = true;
+            this.stop = true;
         }
         
         /**
@@ -1253,15 +1288,14 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
                     System.out.println(nextTrack.getAbsoluteFile().getAbsolutePath());
                 }
                 jProgressBar1.setString(selectedTrack.getOSDStatus());
-                long trackLength = selectedTrack.getLength();
                 try {
                     if (Settings.getInstance().isTrackInWindowTitle()) {
                         setTitle(Settings.getInstance().getWindowTitleText() + selectedTrack.getTitle());
                     } else {
                         setTitle(Settings.getInstance().getWindowTitleText());
                     }
-                    while (!stop && !mpController.isComplete() && trackLength != 0) {
-                        jProgressBar1.setValue((int) (((double) mpController.getTrackPosition() / 1000) / trackLength * 100));
+                    while (!stop && !mpController.isComplete()) {
+                        jProgressBar1.setValue((int) (((double) mpController.getTrackPosition() / 1000) / selectedTrack.getLength() * 100));
                         Thread.sleep(1000);
                     }
                 if (!stop && nextTrack != null) {
