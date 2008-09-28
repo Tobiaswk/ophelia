@@ -20,15 +20,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package ophelia.mainlogic;
 
+import java.util.Observable;
+
 /**
  *
  * @author Tobias W. Kjeldsen
  */
 
-/*
+/**
  * this class works as a type of reporter that holds information about the
- * latest scrobbled track submitted to last.fm */
-public class ScrobbleStatus {
+ * latest scrobbled track submitted to last.fm
+ * the class is also observable - the gui, Main.java, is observer and updates- 
+ * when change of values occur */
+public class ScrobbleStatus extends Observable {
     
     private final String NOTHING_SUBMITTED = "Nothing submitted";
 
@@ -54,12 +58,11 @@ public class ScrobbleStatus {
         return trackTitle;
     }
 
-    public void setArtist(String artist) {
+    public void setLastPlayed(String artist, String trackTitle) {
         this.artist = artist;
-    }
-
-    public void setTrackTitle(String trackTitle) {
         this.trackTitle = trackTitle;
+        setChanged();
+        notifyObservers();
     }
     
     public String getLastPlayed() {

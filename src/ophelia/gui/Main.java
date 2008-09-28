@@ -21,6 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package ophelia.gui;
 
 import java.awt.event.KeyEvent;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.JFileChooser;
@@ -28,6 +31,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import net.roarsoftware.lastfm.scrobble.Scrobbler;
 import ophelia.mainlogic.MediaPlayerController;
+import ophelia.mainlogic.Playlist;
 import ophelia.mainlogic.PlaylistController;
 import ophelia.mainlogic.ScrobbleStatus;
 import ophelia.mainlogic.Settings;
@@ -37,15 +41,18 @@ import ophelia.mainlogic.TrackWithID3;
  *
  * @author  Tobias W. Kjeldsen
  */
-public class Main extends javax.swing.JFrame {
+public class Main extends javax.swing.JFrame implements Observer {
 
-    MediaPlayerController mpController = new MediaPlayerController();
-    PlaylistController plController = new PlaylistController();
-    ExecutorService progressAnimationThread = Executors.newFixedThreadPool(1);
+    MediaPlayerController mpController;
+    PlaylistController plController;
+    ExecutorService progressAnimationThread;
     GUIAnimation progressbarAnimation;
 
     /** Creates new form MainWindow */
     public Main() {
+        mpController = new MediaPlayerController();
+        plController = new PlaylistController();
+        progressAnimationThread = Executors.newFixedThreadPool(1);
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
@@ -61,7 +68,10 @@ public class Main extends javax.swing.JFrame {
         jDialog_playlistchoose.setSize(520, 300);
         jFrame_about.setSize(400, 310);
         jFrame_settings.setSize(360, 260);
-        /* intial load of playlist on startup */
+        /* observer-pattern; we setup what we want to observe */
+        plController.getPlaylist().addObserver(this);
+        ScrobbleStatus.getInstance().addObserver(this);
+        /* intial load animation of playlist on startup */
         new Thread(new GUIAnimation(1)).start();
     }
 
@@ -1073,11 +1083,7 @@ private void jCheckBox_trackInWindowActionPerformed(java.awt.event.ActionEvent e
 }//GEN-LAST:event_jCheckBox_trackInWindowActionPerformed
 
 private void jTextField_searchCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_jTextField_searchCaretUpdate
-    if (jTextField_search.getText().equals("")) {
-        jList_playlist1.setListData(plController.getPlaylistTracks());
-    } else {
-        jList_playlist1.setListData(plController.searchTracks(jTextField_search.getText()));
-    }
+    plController.searchTracks(jTextField_search.getText());
 }//GEN-LAST:event_jTextField_searchCaretUpdate
 
 private void jCheckBoxMenuItem_lastfmScrobbleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem_lastfmScrobbleActionPerformed
@@ -1254,16 +1260,30 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     // End of variables declaration//GEN-END:variables
     
     /**
+     * we use observer-pattern when updating our lists in gui, playlist etc. 
+     */
+    public void update(Observable o, Object arg) {
+        if (o instanceof Playlist && arg instanceof Vector) { /* its playlist array data */
+            jList_playlist1.setListData((Vector) arg);
+        } else if (o instanceof ScrobbleStatus) {
+            jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
+            jLabel_lastfmLastScrobble.setToolTipText("Your last scrobble to last.fm: " + ScrobbleStatus.getInstance().getLastPlayed());
+        }
+    }
+    
+    /**
      * this baby is responsible for updating various gui elements when playing-
-     * tracks or other processing-heavy jobs */
+     * tracks or other processing-heavy jobs 
+     */
     class GUIAnimation implements Runnable {
         
         private boolean stop = false;
         private int job;
+        
         /**
          * 
-         * @param operation 1 for update of playlist stats
-         * @param operaion 2 for update of music seekbar
+         * @param job 1 for update of playlist stats
+         * @param job 2 for update of music seekbar
          */
         public GUIAnimation(int job) {
             this.job = job;
@@ -1279,25 +1299,22 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
          * playlist
          */
         public void playingAnimation() {
-                jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
-                jLabel_lastfmLastScrobble.setToolTipText("Your last scrobble to last.fm: " + ScrobbleStatus.getInstance().getLastPlayed());
-                TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
-                TrackWithID3 nextTrack = null;
-                if (jList_playlist1.getSelectedIndex() != jList_playlist1.getModel().getSize()) {
-                    nextTrack = (TrackWithID3) jList_playlist1.getModel().getElementAt(jList_playlist1.getSelectedIndex()+1);
-                    System.out.println(nextTrack.getAbsoluteFile().getAbsolutePath());
+            TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
+            TrackWithID3 nextTrack = null;
+            if (jList_playlist1.getSelectedIndex() != jList_playlist1.getModel().getSize()) {
+                nextTrack = (TrackWithID3) jList_playlist1.getModel().getElementAt(jList_playlist1.getSelectedIndex() + 1);
+            }
+            jProgressBar1.setString(selectedTrack.getOSDStatus());
+            try {
+                if (Settings.getInstance().isTrackInWindowTitle()) {
+                    setTitle(Settings.getInstance().getWindowTitleText() + selectedTrack.getTitle());
+                } else {
+                    setTitle(Settings.getInstance().getWindowTitleText());
                 }
-                jProgressBar1.setString(selectedTrack.getOSDStatus());
-                try {
-                    if (Settings.getInstance().isTrackInWindowTitle()) {
-                        setTitle(Settings.getInstance().getWindowTitleText() + selectedTrack.getTitle());
-                    } else {
-                        setTitle(Settings.getInstance().getWindowTitleText());
-                    }
-                    while (!stop && !mpController.isComplete()) {
-                        jProgressBar1.setValue((int) (((double) mpController.getTrackPosition() / 1000) / selectedTrack.getLength() * 100));
-                        Thread.sleep(1000);
-                    }
+                while (!stop && !mpController.isComplete()) {
+                    jProgressBar1.setValue((int) (((double) mpController.getTrackPosition() / 1000) / selectedTrack.getLength() * 100));
+                    Thread.sleep(1000);
+                }
                 if (!stop && nextTrack != null) {
                     mpController.playTrack(nextTrack.getAbsoluteFile().getAbsolutePath());
                     jList_playlist1.setSelectedValue(nextTrack, true);
@@ -1320,7 +1337,6 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
                 jLabel_playlistcount.setText("Indexing... " + plController.getTrackCount() + " tracks indexed ");
             }
             jLabel_playlistcount.setText(plController.getPlaylistStats());
-            jList_playlist1.setListData(plController.getPlaylistTracks());
         }
 
         public void run() {
@@ -1331,4 +1347,5 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
             }
         }
     }
+    
 }

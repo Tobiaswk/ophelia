@@ -35,6 +35,10 @@ public class PlaylistController {
         playlist = new Playlist();
     }
 
+    public Playlist getPlaylist() {
+        return playlist;
+    }
+
     public void addPlaylistTracks(File[] files) {
         playlist.addTracks(files);
     }
@@ -59,8 +63,8 @@ public class PlaylistController {
         playlist.clearPlaylist();
     }
 
-    public TrackWithID3[] searchTracks(String keyword) {
-        return playlist.searchTracks(keyword);
+    public void searchTracks(String keyword) {
+        playlist.searchTracks(keyword);
     }
 
     public void savePlaylistFile(String playlistFilename) {

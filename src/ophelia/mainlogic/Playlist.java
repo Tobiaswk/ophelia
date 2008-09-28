@@ -28,17 +28,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Observable;
 import java.util.Vector;
 
 /**
  *
  * @author Tobias W. Kjeldsen
  */
-public class Playlist {
+public class Playlist extends Observable {
 
     private Vector<TrackWithID3> trackPlaylist;
     private Vector<TrackWithID3> resultsPlaylist;
-    private int lastPlayedPosition;
     private boolean indexing;
 
     public Playlist() {
@@ -84,25 +84,14 @@ public class Playlist {
         trackPlaylist.clear();
     }
 
-    public TrackWithID3[] searchTracks(String keyword) {
-        resultsPlaylist.clear();
-        String title;
-        for (TrackWithID3 track : trackPlaylist) {
-            try {
-                title = track.getTitle() + track.getArtist();
-            } catch (Exception ex) {
-                title = track.getAbsoluteFile().getName();
-            }
-            if (title.toLowerCase().indexOf(keyword.toLowerCase()) != -1) {
-                resultsPlaylist.add(track);
-            }
-        }
-        return resultsPlaylist.toArray(new TrackWithID3[0]);
+    public void searchTracks(String keyword) {
+        indexing = true;
+        new Thread(new TrackIndexing(keyword, "search")).start();
     }
 
     public void loadPlaylistFile(String playlistFilename) {
         indexing = true;
-        new Thread(new TrackIndexing(playlistFilename)).start();
+        new Thread(new TrackIndexing(playlistFilename, "indexing")).start();
     }
 
     private void loadPlaylistFile() {
@@ -125,25 +114,54 @@ public class Playlist {
         savePlaylistFile(Settings.getInstance().getDefaultPlaylistName());
     }
 
+    /**
+     * we use observer-pattern, this class is observable, we call this-
+     * method when something in playlist has changed
+     * @param object which was updated
+     */
+    public void signalChange(Object object) {
+        setChanged();
+        notifyObservers(object);
+    }
+
     private class TrackIndexing implements Runnable {
 
         private File[] files;
-        private String playlistFilename;
+        private String arg;
+        private String job;
 
         /**
-         * 
-         * @param this constructor is used when indexing newly added tracks
+         * this constructor is used when indexing newly added tracks
+         * @param array of File
          */
         public TrackIndexing(File[] files) {
             this.files = files;
         }
 
         /**
-         * 
-         * @param this constructor is used when indexing from playlistfile
+         * this constructor is used when indexing or searching
+         * @param arg either playlistfilename or a seach keyword
+         * @param jobType "indexing" or "search"
          */
-        public TrackIndexing(String playlistFilename) {
-            this.playlistFilename = playlistFilename;
+        public TrackIndexing(String arg, String job) {
+            this.arg = arg;
+            this.job = job;
+        }
+
+        public TrackWithID3[] searchTracks(String keyword) {
+            resultsPlaylist.clear();
+            String title;
+            for (TrackWithID3 track : trackPlaylist) {
+                try {
+                    title = track.getTitle() + track.getArtist();
+                } catch (Exception ex) {
+                    title = track.getAbsoluteFile().getName();
+                }
+                if (title.toLowerCase().indexOf(keyword.toLowerCase()) != -1) {
+                    resultsPlaylist.add(track);
+                }
+            }
+            return resultsPlaylist.toArray(new TrackWithID3[0]);
         }
 
         public void addTracks(File[] files) {
@@ -182,8 +200,13 @@ public class Playlist {
             if (files != null) {
                 addTracks(files);
                 savePlaylistFile();
-            } else {
-                addTracks(playlistFilename);
+                signalChange(trackPlaylist);
+            } else if (job.equals("indexing")) {
+                addTracks(arg);
+                signalChange(trackPlaylist);
+            } else if (job.equals("search")) {
+                searchTracks(arg);
+                signalChange(resultsPlaylist);
             }
             indexing = false;
         }
