@@ -1301,7 +1301,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
         public void playingAnimation() {
             TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
             TrackWithID3 nextTrack = null;
-            if (jList_playlist1.getSelectedIndex() != jList_playlist1.getModel().getSize()) {
+            if (jList_playlist1.getSelectedIndex() != jList_playlist1.getModel().getSize() -1) {
                 nextTrack = (TrackWithID3) jList_playlist1.getModel().getElementAt(jList_playlist1.getSelectedIndex() + 1);
             }
             jProgressBar1.setString(selectedTrack.getOSDStatus());
