@@ -30,12 +30,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import net.roarsoftware.lastfm.scrobble.Scrobbler;
-import ophelia.mainlogic.MediaPlayerController;
-import ophelia.mainlogic.Playlist;
-import ophelia.mainlogic.PlaylistController;
-import ophelia.mainlogic.ScrobbleStatus;
-import ophelia.mainlogic.Settings;
-import ophelia.mainlogic.TrackWithID3;
+import ophelia.main.MediaPlayerController;
+import ophelia.main.Playlist;
+import ophelia.main.PlaylistController;
+import ophelia.main.ScrobbleStatus;
+import ophelia.main.Settings;
+import ophelia.main.TrackWithID3;
 
 /**
  *
