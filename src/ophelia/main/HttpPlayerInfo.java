@@ -28,7 +28,7 @@ import java.util.Observer;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * this is just a skeleton-class for http-support in the future - just an idea
  * @author Tobias W. Kjeldsen
  */
 public class HttpPlayerInfo implements Observer {
