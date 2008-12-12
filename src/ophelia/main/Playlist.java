@@ -89,13 +89,13 @@ public class Playlist extends Observable {
         new Thread(new TrackIndexing(keyword, "search")).start();
     }
 
+    private void loadPlaylistFile() {
+        loadPlaylistFile(Settings.getInstance().getDefaultPlaylistName());
+    }
+
     public void loadPlaylistFile(String playlistFilename) {
         indexing = true;
         new Thread(new TrackIndexing(playlistFilename, "indexing")).start();
-    }
-
-    private void loadPlaylistFile() {
-        loadPlaylistFile(Settings.getInstance().getDefaultPlaylistName());
     }
 
     public void savePlaylistFile(String playlistName) {

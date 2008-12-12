@@ -53,9 +53,11 @@ public class Settings {
     private boolean trayIcon = false;
     private boolean trayMinimize = false;
     private boolean trayClose = false;
+    private boolean useHttpPlayerInfo = false;
+    private int httpPlayerInfoPort = 8080;
     private String windowTitleText = "Ophelia, the cat!";
     private boolean trackInWindowTitle = false;
-    private String configurationFileName = "settings.ini";
+    private final String configurationFileName = "ophelia.settings";
     /* a little easteregg ;) */
     private boolean easterEgg = false;
 
@@ -176,6 +178,22 @@ public class Settings {
         return opheliaVersion;
     }
 
+    public int getHttpPlayerInfoPort() {
+        return httpPlayerInfoPort;
+    }
+
+    public void setHttpPlayerInfoPort(int httpPlayerInfoPort) {
+        this.httpPlayerInfoPort = httpPlayerInfoPort;
+    }
+
+    public boolean isUseHttpPlayerInfo() {
+        return useHttpPlayerInfo;
+    }
+
+    public void setUseHttpPlayerInfo(boolean useHttpPlayerInfo) {
+        this.useHttpPlayerInfo = useHttpPlayerInfo;
+    }
+
     public String getSetting(String setting_name) throws Exception {
         String xmlString = new String(configurationData);
         String v = null;
@@ -216,19 +234,22 @@ public class Settings {
 
     private void setupNewConfiguration() {
         configurationData =
-                "[Ophelia, the cat! configuration file]\n" +
-                "<opheliaVersion>" + opheliaVersion + "</opheliaVersion>\n" +
-                "<clientID>" + clientID + "</clientID>\n" +
-                "<lastfmScrobble>" + lastfmScrobble + "</lastfmScrobble>\n" +
-                "<lastfmUsername>" + lasfmUsername + "</lastfmUsername>\n" +
-                "<lastfmPassword>" + lasfmPassword + "</lastfmPassword>\n" +
-                "<defaultPlaylistName>" + defaultPlaylistName + "</defaultPlaylistName>\n" +
-                "<loadPlaylistStartup>" + loadPlaylistStartup + "</loadPlaylistStartup>\n" +
-                "<trayIcon>" + trayIcon + "</trayIcon>\n" +
-                "<trayMinimize>" + trayMinimize + "</trayMinimize>\n" +
-                "<trayClose>" + trayClose + "</trayClose>\n" +
-                "<windowTitleText>" + windowTitleText + "</windowTitleText>\n" +
-                "<trackInWindowTitle>" + trackInWindowTitle + "</trackInWindowTitle>";
+                "<opheliaSettings>\n" +
+                "   <opheliaVersion>" + opheliaVersion + "</opheliaVersion>\n" +
+                "   <clientID>" + clientID + "</clientID>\n" +
+                "   <lastfmScrobble>" + lastfmScrobble + "</lastfmScrobble>\n" +
+                "   <lastfmUsername>" + lasfmUsername + "</lastfmUsername>\n" +
+                "   <lastfmPassword>" + lasfmPassword + "</lastfmPassword>\n" +
+                "   <defaultPlaylistName>" + defaultPlaylistName + "</defaultPlaylistName>\n" +
+                "   <loadPlaylistStartup>" + loadPlaylistStartup + "</loadPlaylistStartup>\n" +
+                "   <trayIcon>" + trayIcon + "</trayIcon>\n" +
+                "   <trayMinimize>" + trayMinimize + "</trayMinimize>\n" +
+                "   <trayClose>" + trayClose + "</trayClose>\n" +
+                "   <useHttpPlayerInfo>" + useHttpPlayerInfo + "</useHttpPlayerInfo>\n" +
+                "   <httpPlayerInfoPort>" + httpPlayerInfoPort + "</httpPlayerInfoPort>\n" +
+                "   <windowTitleText>" + windowTitleText + "</windowTitleText>\n" +
+                "   <trackInWindowTitle>" + trackInWindowTitle + "</trackInWindowTitle>\n" +
+                "<opheliaSettings/>";
     }
 
     public void setupConfiguration() {
@@ -241,6 +262,8 @@ public class Settings {
             this.trayIcon = Boolean.parseBoolean(getSetting("trayIcon"));
             this.trayMinimize = Boolean.parseBoolean(getSetting("trayMinimize"));
             this.trayClose = Boolean.parseBoolean(getSetting("trayClose"));
+            this.useHttpPlayerInfo = Boolean.parseBoolean("useHttpPlayerInfo");
+            this.httpPlayerInfoPort = Integer.parseInt(getSetting("httpPlayerInfoPort"));
             this.windowTitleText = getSetting("windowTitleText");
             this.trackInWindowTitle = Boolean.parseBoolean(getSetting("trackInWindowTitle"));
             this.easterEgg = Boolean.parseBoolean(getSetting("easterEgg"));

@@ -622,6 +622,11 @@ public class Main extends javax.swing.JFrame implements Observer {
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         jList_playlist1.setBackground(java.awt.SystemColor.control);
+        jList_playlist1.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Click search field to view loaded playlist..." };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
         jList_playlist1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jList_playlist1.setSelectionBackground(new java.awt.Color(153, 0, 0));
         jList_playlist1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1258,28 +1263,28 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JTextField jTextField_windowTitle;
     private javax.swing.JToolBar jToolBar_statusbar;
     // End of variables declaration//GEN-END:variables
-    
+
     /**
      * we use observer-pattern when updating our lists in gui, playlist etc. 
      */
     public void update(Observable o, Object arg) {
-        if (o instanceof Playlist && arg instanceof Vector) { /* its playlist array data */
+        if (o instanceof Playlist) { /* its playlist array data */
             jList_playlist1.setListData((Vector) arg);
         } else if (o instanceof ScrobbleStatus) {
             jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
             jLabel_lastfmLastScrobble.setToolTipText("Your last scrobble to last.fm: " + ScrobbleStatus.getInstance().getLastPlayed());
         }
     }
-    
+
     /**
      * this baby is responsible for updating various gui elements when playing-
      * tracks or other processing-heavy jobs 
      */
     class GUIAnimation implements Runnable {
-        
+
         private boolean stop = false;
         private int job;
-        
+
         /**
          * 
          * @param job 1 for update of playlist stats
@@ -1292,7 +1297,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
         public void stop() {
             this.stop = true;
         }
-        
+
         /**
          * animating for the progressbar for displaying of track-progress
          * furthermore it also "shuffless" or do "continues play" on the-
@@ -1301,7 +1306,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
         public void playingAnimation() {
             TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
             TrackWithID3 nextTrack = null;
-            if (jList_playlist1.getSelectedIndex() != jList_playlist1.getModel().getSize() -1) {
+            if (jList_playlist1.getSelectedIndex() != jList_playlist1.getModel().getSize() - 1) {
                 nextTrack = (TrackWithID3) jList_playlist1.getModel().getElementAt(jList_playlist1.getSelectedIndex() + 1);
             }
             jProgressBar1.setString(selectedTrack.getOSDStatus());
@@ -1313,8 +1318,9 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
                 }
                 while (!stop && !mpController.isComplete()) {
                     jProgressBar1.setValue((int) (((double) mpController.getTrackPosition() / 1000) / selectedTrack.getLength() * 100));
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                 }
+                /* continous play */
                 if (!stop && nextTrack != null) {
                     mpController.playTrack(nextTrack.getAbsoluteFile().getAbsolutePath());
                     jList_playlist1.setSelectedValue(nextTrack, true);
@@ -1324,6 +1330,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
                     progressbarAnimation = new GUIAnimation(2);
                     progressAnimationThread.submit(progressbarAnimation);
                 }
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -1347,5 +1354,4 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
             }
         }
     }
-    
 }
