@@ -1,0 +1,19 @@
+<project name="ophelia" default="build">
+	<property file="build.properties" />
+	<target name="compile">
+		<delete dir="compile" />
+		<mkdir dir="compile" />
+		<javac srcdir="src" destdir="compile" excludes="ophelia/gui/test.java" debug="${project.debug}"/>
+	</target>
+	<target name="build" depends="compile">
+		<jar destfile="${project.jar.name}" basedir="compile">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+			<manifest>
+				<attribute name="Main-Class" value="${project.main.class}" />
+			</manifest>
+		</jar>
+		<delete dir="compile"/>
+	</target>
+</project>
