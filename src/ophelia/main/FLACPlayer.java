@@ -50,10 +50,7 @@ public class FLACPlayer {
 
     public void play(String filename) throws Exception {
         try {
-            if (player != null) {
-                player.close();
-                player = null;
-            }
+            stop();
             player = new Player(new FileInputStream(filename));
             new Thread(new PlayingTask(player)).start();
         } catch (Exception ex) {
@@ -61,15 +58,15 @@ public class FLACPlayer {
         }
     }
 
-    public void stop() {
-        if (player != null) {
-            player.close();
-        }
-    }
-
     public void pause() {
         if (player != null) {
             player.pause();
+        }
+    }
+
+    public void stop() {
+        if (player != null) {
+            player.stop();
         }
     }
 }

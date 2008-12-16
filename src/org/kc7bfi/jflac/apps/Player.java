@@ -88,8 +88,13 @@ public class Player implements PCMProcessor {
         }
     }
 
+    public void stop() {
+        close();
+    }
+
     public void close() {
         line.close();
+        listeners.clear();
     }
 
     /**

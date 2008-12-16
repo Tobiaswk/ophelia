@@ -110,10 +110,6 @@ public class Playlist extends Observable {
         }
     }
 
-    private void savePlaylistFile() {
-        savePlaylistFile(Settings.getInstance().getDefaultPlaylistName());
-    }
-
     /**
      * we use observer-pattern, this class is observable, we call this-
      * method when something in playlist has changed
@@ -127,7 +123,7 @@ public class Playlist extends Observable {
     private class TrackIndexing implements Runnable {
 
         private File[] files;
-        private String arg;
+        private String filename;
         private String job;
 
         /**
@@ -144,11 +140,14 @@ public class Playlist extends Observable {
          * @param jobType "indexing" or "search"
          */
         public TrackIndexing(String arg, String job) {
-            this.arg = arg;
+            this.filename = arg;
             this.job = job;
         }
 
-        public TrackWithID3[] searchTracks(String keyword) {
+        public Vector<TrackWithID3> searchTracks(String keyword) {
+            if (keyword.equals("")) {
+                return trackPlaylist;
+            }
             resultsPlaylist.clear();
             String title;
             for (TrackWithID3 track : trackPlaylist) {
@@ -161,10 +160,10 @@ public class Playlist extends Observable {
                     resultsPlaylist.add(track);
                 }
             }
-            return resultsPlaylist.toArray(new TrackWithID3[0]);
+            return resultsPlaylist;
         }
 
-        public void addTracks(File[] files) {
+        public Vector<TrackWithID3> addTracks(File[] files) {
             try {
                 for (File file : files) {
                     if (file.isDirectory()) {
@@ -179,10 +178,10 @@ public class Playlist extends Observable {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            return;
+            return trackPlaylist;
         }
 
-        public void addTracks(String playlistFilename) {
+        public Vector<TrackWithID3> addTracks(String playlistFilename) {
             ArrayList<File> result = new ArrayList<File>();
             try {
                 BufferedReader in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFilename)));
@@ -194,19 +193,16 @@ public class Playlist extends Observable {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+            return trackPlaylist;
         }
 
         public void run() {
             if (files != null) {
-                addTracks(files);
-                savePlaylistFile();
-                signalChange(trackPlaylist);
+                signalChange(addTracks(files));
             } else if (job.equals("indexing")) {
-                addTracks(arg);
-                signalChange(trackPlaylist);
+                signalChange(addTracks(filename));
             } else if (job.equals("search")) {
-                searchTracks(arg);
-                signalChange(resultsPlaylist);
+                signalChange(searchTracks(filename));
             }
             indexing = false;
         }

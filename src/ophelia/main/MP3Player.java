@@ -65,9 +65,7 @@ public class MP3Player {
 
     public void play(String filename) {
         try {
-            if (player != null) {
-                player.stop();
-            }
+            stop();
             player = new Player(new File(filename));
             playThread.submit(new PlayingTask(player));
         } catch (Exception ex) {

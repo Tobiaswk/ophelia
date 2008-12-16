@@ -977,7 +977,7 @@ private void jButton_stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     mpController.stopTrack();
     jProgressBar1.setValue(0);
     jProgressBar1.setString("");
-    setTitle(bundle.getString("EMPTY") /* NLS:  */ );
+    setTitle(Settings.getInstance().getWindowTitleText());
     if (progressbarAnimation != null) {
         progressbarAnimation.stop();
     }
