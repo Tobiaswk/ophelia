@@ -62,11 +62,11 @@ public class Main extends javax.swing.JFrame implements Observer {
             ex.printStackTrace();
         }
         initComponents();
-        this.setIconImage(this.getToolkit().getImage(getClass().getResource("cat-icon.gif")));
-        jFrame_about.setIconImage(this.getToolkit().getImage(getClass().getResource("cat-icon.gif")));
-        jFrame_settings.setIconImage(this.getToolkit().getImage(getClass().getResource("cat-icon.gif")));
-        jDialog_musicchoose.setIconImage(this.getToolkit().getImage(getClass().getResource("cat-icon.gif")));
-        jDialog_playlistchoose.setIconImage((this.getToolkit().getImage(getClass().getResource("cat-icon.gif"))));
+        this.setIconImage(this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png")));
+        jFrame_about.setIconImage(this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png")));
+        jFrame_settings.setIconImage(this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png")));
+        jDialog_musicchoose.setIconImage(this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png")));
+        jDialog_playlistchoose.setIconImage((this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png"))));
         jDialog_musicchoose.setSize(520, 300);
         jDialog_playlistchoose.setSize(520, 300);
         jFrame_about.setSize(400, 310);
@@ -181,7 +181,8 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem_checkVersion = new javax.swing.JMenuItem();
 
-        jDialog_musicchoose.setTitle(bundle.getString("CHOOSE_MUSIC_TITLE"));
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources"); // NOI18N
+        jDialog_musicchoose.setTitle(bundle.getString("CHOOSE_MUSIC_TITLE")); // NOI18N
 
         jFileChooser_musicfile.setFileFilter(new MediaFilter());
         jFileChooser_musicfile.setFileSelectionMode(javax.swing.JFileChooser.FILES_AND_DIRECTORIES);
@@ -207,15 +208,15 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jFrame_about.setTitle("Holy smokes... that's a cat!");
 
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/cat-icon.gif"))); // NOI18N
-        jLabel4.setText(bundle.getString("TITLE") /* NLS: Ophelia, the cat! */ );
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/ophelia-mascot.png"))); // NOI18N
+        jLabel4.setText("Ophelia, the cat!");
 
-        jLabel5.setText(bundle.getString("HTML_DESCRIPTION") /* NLS: <html>Ophelia was build with the single and only purpose of <b>being the most lightweight and minimalistic music-player ever!</b><br>Compiled version weighs aprox. 400kb</html> */ );
+        jLabel5.setText(bundle.getString("HTML_DESCRIPTION")); // NOI18N
         jLabel5.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
-        jLabel6.setText(bundle.getString("AUTHOR") /* NLS: by Tobias W. Kjeldsen */ );
+        jLabel6.setText(bundle.getString("AUTHOR")); // NOI18N
 
-        jLabel_version.setText(bundle.getString("VERSION_") /* NLS: version  */  + Settings.getInstance().getOpheliaVersion());
+        jLabel_version.setText(java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("VERSION_") + Settings.getInstance().getOpheliaVersion());
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -223,7 +224,8 @@ public class Main extends javax.swing.JFrame implements Observer {
                 {"Jens Vonderheide", "parsing ID3-tags on the go!", "www.vdheide.de"},
                 {"JavaZoom", "providing nice MP3-decoding!", "www.javazoom.net"},
                 {"David R. Robison", "providing fantastic FLAC-decoding", "www.jflac.sourceforge.net"},
-                {"Janni Kovacs", "last.fm API bindings for Java", null}
+                {"Janni Kovacs", "last.fm API bindings for Java", "www.somerandomdude.net/srd-projects/bitcons"},
+                {"Troy Dunham", "ophelia-mascot icon", "www.troyboydesign.com"}
             },
             new String [] {
                 "Author:", "", "Homepage:"
@@ -242,9 +244,9 @@ public class Main extends javax.swing.JFrame implements Observer {
         jScrollPane3.setViewportView(jTable1);
 
         jLabel13.setFont(jLabel13.getFont().deriveFont(jLabel13.getFont().getStyle() | java.awt.Font.BOLD));
-        jLabel13.setText("Thanks and credit goes to:");
+        jLabel13.setText(bundle.getString("THANKS_AND_CREDIT_GOES_TO")); // NOI18N
 
-        jLabel14.setText("For information, changelog and source:");
+        jLabel14.setText(bundle.getString("FOR_MORE_INFORMATION")); // NOI18N
 
         jLabel_linkHomepageOphelia.setText("<html><a href=http://wkjeldsen.dk/ophelia>www.wkjeldsen.dk/ophelia/</a></html>");
         jLabel_linkHomepageOphelia.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -296,7 +298,7 @@ public class Main extends javax.swing.JFrame implements Observer {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -311,7 +313,7 @@ public class Main extends javax.swing.JFrame implements Observer {
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        jFrame_settings.setTitle(bundle.getString("SETTINGS"));
+        jFrame_settings.setTitle(bundle.getString("SETTINGS")); // NOI18N
 
         jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.LEFT);
 
@@ -332,7 +334,7 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jButton2.setText(bundle.getString("RESTORE_DEFAULTS") /* NLS: Restore defaults */ );
+        jButton2.setText(bundle.getString("RESTORE_DEFAULTS")); // NOI18N
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -377,7 +379,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
 
         jCheckBox_trackInWindow.setSelected(Settings.getInstance().isTrackInWindowTitle());
-        jCheckBox_trackInWindow.setText(bundle.getString("SHOW_TRACK_IN_WINDOW") /* NLS: Show currently playing track in window title */ );
+        jCheckBox_trackInWindow.setText(bundle.getString("SHOW_TRACK_IN_WINDOW")); // NOI18N
         jCheckBox_trackInWindow.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBox_trackInWindowActionPerformed(evt);
@@ -385,7 +387,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
 
         jCheckBox_trayIcon.setSelected(Settings.getInstance().isTrayIcon());
-        jCheckBox_trayIcon.setText(bundle.getString("DISPLAY_TRAY_ICON") /* NLS: Display icon in tray: */);
+        jCheckBox_trayIcon.setText(bundle.getString("DISPLAY_TRAY_ICON")); // NOI18N
         jCheckBox_trayIcon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBox_trayIconActionPerformed(evt);
@@ -393,7 +395,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
 
         jCheckBox_trayClose.setSelected(Settings.getInstance().isTrayClose());
-        jCheckBox_trayClose.setText(bundle.getString("CLOSE_TO_TRAY") /* NLS: Close to tray */ );
+        jCheckBox_trayClose.setText(bundle.getString("CLOSE_TO_TRAY")); // NOI18N
         jCheckBox_trayClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBox_trayCloseActionPerformed(evt);
@@ -401,14 +403,14 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
 
         jCheckBox_trayMinimize.setSelected(Settings.getInstance().isTrayMinimize());
-        jCheckBox_trayMinimize.setText(bundle.getString("MINIMIZE_TO_TRAY") /* NLS: Minimize to tray */ );
+        jCheckBox_trayMinimize.setText(bundle.getString("MINIMIZE_TO_TRAY")); // NOI18N
         jCheckBox_trayMinimize.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBox_trayMinimizeActionPerformed(evt);
             }
         });
 
-        jButton3.setText(bundle.getString("RESTORE_DEFAULTS") /* NLS: Restore defaults */ );
+        jButton3.setText(bundle.getString("RESTORE_DEFAULTS")); // NOI18N
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -478,7 +480,7 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jLabel9.setText("Password:");
 
-        jButton_checkAuthentication.setText(bundle.getString("CHECK_AUTH") /* NLS: Check authentication */ );
+        jButton_checkAuthentication.setText(bundle.getString("CHECK_AUTH")); // NOI18N
         jButton_checkAuthentication.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton_checkAuthenticationActionPerformed(evt);
@@ -486,7 +488,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
 
         jCheckBox_lastfmScrobble.setSelected(Settings.getInstance().isLastfmScrobble());
-        jCheckBox_lastfmScrobble.setText(bundle.getString("SCROBBLE_MY_SONGS") /* NLS: Scrobble my songs */ );
+        jCheckBox_lastfmScrobble.setText(bundle.getString("SCROBBLE_MY_SONGS")); // NOI18N
         jCheckBox_lastfmScrobble.setToolTipText("Enabled and your songs will be entering \"Recently Listened Tracks\" on last.fm");
         jCheckBox_lastfmScrobble.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -565,7 +567,7 @@ public class Main extends javax.swing.JFrame implements Observer {
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        jDialog_playlistchoose.setTitle(bundle.getString("PLAYLIST_MANAGEMENT") /* NLS: Playlist management */ );
+        jDialog_playlistchoose.setTitle(bundle.getString("PLAYLIST_MANAGEMENT")); // NOI18N
 
         jFileChooser_playlistfile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -586,15 +588,15 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jDialog_playlistchoose.getAccessibleContext().setAccessibleParent(null);
 
-        jButton1.setText(bundle.getString("JBUTTON1") /* NLS: jButton1 */ );
+        jButton1.setText("jButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(Settings.getInstance().getWindowTitleText());
 
-        jLabel1.setText(bundle.getString("MULTIPOINT") /* NLS: ... */ );
+        jLabel1.setText("...");
 
         jButton_addDirectory.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/open.gif"))); // NOI18N
-        jButton_addDirectory.setText(bundle.getString("DIRS__") /* NLS: Directories   */ );
+        jButton_addDirectory.setText(bundle.getString("DIRS__")); // NOI18N
         jButton_addDirectory.setBorder(null);
         jButton_addDirectory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -603,7 +605,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
 
         jButton_addFiles.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/add.gif"))); // NOI18N
-        jButton_addFiles.setText(bundle.getString("FILES__") /* NLS: Files   */ );
+        jButton_addFiles.setText(bundle.getString("FILES__")); // NOI18N
         jButton_addFiles.setBorder(null);
         jButton_addFiles.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -611,13 +613,13 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jLabel2.setText(bundle.getString("ADD...") /* NLS: Add... */ );
+        jLabel2.setText("Add...");
 
         jProgressBar1.setForeground(new java.awt.Color(204, 0, 0));
         jProgressBar1.setString("");
         jProgressBar1.setStringPainted(true);
 
-        jLabel3.setText(bundle.getString("MULTIPOINT") /* NLS: ... */ );
+        jLabel3.setText("...");
 
         jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
 
@@ -660,7 +662,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jTabbedPane1.addTab("Playlist 2", jScrollPane2);
 
         jButton_play.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/play.gif"))); // NOI18N
-        jButton_play.setText(bundle.getString("PLAY__") /* NLS: Play   */ );
+        jButton_play.setText(bundle.getString("PLAY")); // NOI18N
         jButton_play.setBorder(null);
         jButton_play.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -713,7 +715,7 @@ public class Main extends javax.swing.JFrame implements Observer {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTabbedPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -725,7 +727,7 @@ public class Main extends javax.swing.JFrame implements Observer {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel11)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField_search, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+                        .addComponent(jTextField_search, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -763,9 +765,9 @@ public class Main extends javax.swing.JFrame implements Observer {
                 .addComponent(jToolBar_statusbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jMenu_addFiles.setText(bundle.getString("FILE") /* NLS: File */ );
+        jMenu_addFiles.setText(bundle.getString("FILE")); // NOI18N
 
-        jMenuItem_addFiles.setText(bundle.getString("ADD_FILES") /* NLS: Add files... */ );
+        jMenuItem_addFiles.setText(bundle.getString("ADD_FILES")); // NOI18N
         jMenuItem_addFiles.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_addFilesActionPerformed(evt);
@@ -773,7 +775,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
         jMenu_addFiles.add(jMenuItem_addFiles);
 
-        jMenuItem_addDirectory.setText(bundle.getString("ADD_DIRS") /* NLS: Add directories... */ );
+        jMenuItem_addDirectory.setText(bundle.getString("ADD_DIRS")); // NOI18N
         jMenuItem_addDirectory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_addDirectoryActionPerformed(evt);
@@ -782,7 +784,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenu_addFiles.add(jMenuItem_addDirectory);
         jMenu_addFiles.add(jSeparator3);
 
-        jMenuItem_openDefaultPlaylist.setText(bundle.getString("OPEN_DEF_PLAYLIST") /* NLS: Open default playlist */ );
+        jMenuItem_openDefaultPlaylist.setText(bundle.getString("OPEN_DEF_PLAYLIST")); // NOI18N
         jMenuItem_openDefaultPlaylist.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_openDefaultPlaylistActionPerformed(evt);
@@ -790,7 +792,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
         jMenu_addFiles.add(jMenuItem_openDefaultPlaylist);
 
-        jMenuItem_openPlaylist.setText(bundle.getString("OPEN_PLAYLIST") /* NLS: Open playlist */ );
+        jMenuItem_openPlaylist.setText(bundle.getString("OPEN_PLAYLIST")); // NOI18N
         jMenuItem_openPlaylist.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_openPlaylistActionPerformed(evt);
@@ -798,7 +800,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
         jMenu_addFiles.add(jMenuItem_openPlaylist);
 
-        jMenuItem_savePlaylist.setText(bundle.getString("SAVE_PLAYLIST") /* NLS: Save playlist */ );
+        jMenuItem_savePlaylist.setText(bundle.getString("SAVE_PLAYLIST")); // NOI18N
         jMenuItem_savePlaylist.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_savePlaylistActionPerformed(evt);
@@ -807,7 +809,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenu_addFiles.add(jMenuItem_savePlaylist);
         jMenu_addFiles.add(jSeparator4);
 
-        jMenuItem10.setText(bundle.getString("QUIT") /* NLS: Quit */ );
+        jMenuItem10.setText(bundle.getString("QUIT")); // NOI18N
         jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem10ActionPerformed(evt);
@@ -817,10 +819,10 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jMenuBar1.add(jMenu_addFiles);
 
-        jMenu4.setText(bundle.getString("EDIT") /* NLS: Edit */ );
+        jMenu4.setText(bundle.getString("EDIT")); // NOI18N
 
         jMenuItem_clearplaylist.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem_clearplaylist.setText(bundle.getString("CLEAR_PLAYLIST") /* NLS: Clear playlist */ );
+        jMenuItem_clearplaylist.setText(bundle.getString("CLEAR_PLAYLIST")); // NOI18N
         jMenuItem_clearplaylist.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_clearplaylistActionPerformed(evt);
@@ -829,33 +831,33 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenu4.add(jMenuItem_clearplaylist);
 
         jMenuItem_removetrack.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
-        jMenuItem_removetrack.setText(bundle.getString("REMOVE_SELECTED_TRACK") /* NLS: Remove selected track */ );
+        jMenuItem_removetrack.setText(bundle.getString("REMOVE_SELECTED_TRACK")); // NOI18N
         jMenu4.add(jMenuItem_removetrack);
         jMenu4.add(jSeparator5);
 
         jCheckBoxMenuItem2.setSelected(true);
-        jCheckBoxMenuItem2.setText(bundle.getString("NO_SORT") /* NLS: No sort */ );
+        jCheckBoxMenuItem2.setText(bundle.getString("NO_SORT")); // NOI18N
         jMenu4.add(jCheckBoxMenuItem2);
 
-        jRadioButtonMenuItem1.setText(bundle.getString("SORT_BY_ARTIST") /* NLS: Sort by artist */ );
+        jRadioButtonMenuItem1.setText(bundle.getString("SORT_BY_ARTIST")); // NOI18N
         jMenu4.add(jRadioButtonMenuItem1);
 
-        jRadioButtonMenuItem2.setText(bundle.getString("SORT_BY_ALPH") /* NLS: Sort alphabetically */ );
+        jRadioButtonMenuItem2.setText(bundle.getString("SORT_BY_ALPH")); // NOI18N
         jMenu4.add(jRadioButtonMenuItem2);
 
-        jRadioButtonMenuItem3.setText(bundle.getString("SORT_BY_TRACK_LENGTH") /* NLS: sort by track length */ );
+        jRadioButtonMenuItem3.setText(bundle.getString("SORT_BY_TRACK_LENGTH")); // NOI18N
         jMenu4.add(jRadioButtonMenuItem3);
 
         jMenuBar1.add(jMenu4);
 
-        jMenu5.setText(bundle.getString("PLAYBACK") /* NLS: Playback */ );
+        jMenu5.setText(bundle.getString("PLAYBACK")); // NOI18N
 
         jMenuItem_play.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, 0));
-        jMenuItem_play.setText(bundle.getString("PLAY") /* NLS: Play */ );
+        jMenuItem_play.setText(bundle.getString("PLAY")); // NOI18N
         jMenu5.add(jMenuItem_play);
 
         jMenuItem_pause.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0));
-        jMenuItem_pause.setText(bundle.getString("PAUSE") /* NLS: Pause */ );
+        jMenuItem_pause.setText(bundle.getString("PAUSE")); // NOI18N
         jMenuItem_pause.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_pauseActionPerformed(evt);
@@ -864,7 +866,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenu5.add(jMenuItem_pause);
 
         jMenuItem_stop.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, 0));
-        jMenuItem_stop.setText(bundle.getString("STOP") /* NLS: Stop */ );
+        jMenuItem_stop.setText(bundle.getString("STOP")); // NOI18N
         jMenuItem_stop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_stopActionPerformed(evt);
@@ -874,21 +876,21 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenu5.add(jSeparator6);
 
         jRadioButtonMenuItem4.setSelected(true);
-        jRadioButtonMenuItem4.setText(bundle.getString("CONTINUE_PLAY") /* NLS: Continues play */ );
+        jRadioButtonMenuItem4.setText(bundle.getString("CONTINUE_PLAY")); // NOI18N
         jRadioButtonMenuItem4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/continues.gif"))); // NOI18N
         jMenu5.add(jRadioButtonMenuItem4);
 
-        jRadioButtonMenuItem5.setText(bundle.getString("SHUFFLE_PLAY") /* NLS: Shuffle play */ );
+        jRadioButtonMenuItem5.setText(bundle.getString("SHUFFLE_PLAY")); // NOI18N
         jRadioButtonMenuItem5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/shuffle.gif"))); // NOI18N
         jMenu5.add(jRadioButtonMenuItem5);
 
         jMenuBar1.add(jMenu5);
 
-        jMenu2.setText(bundle.getString("OPTIONS") /* NLS: Options */ );
+        jMenu2.setText(bundle.getString("OPTIONS")); // NOI18N
 
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/tools.gif"))); // NOI18N
-        jMenuItem2.setText(bundle.getString("SETTINGS"));
+        jMenuItem2.setText(bundle.getString("SETTINGS")); // NOI18N
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem2ActionPerformed(evt);
@@ -898,7 +900,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenu2.add(jSeparator2);
 
         jCheckBoxMenuItem_lastfmScrobble.setSelected(Settings.getInstance().isLastfmScrobble());
-        jCheckBoxMenuItem_lastfmScrobble.setText(bundle.getString("SCROBBLE_SONGS") /* NLS: Scrobble songs */ );
+        jCheckBoxMenuItem_lastfmScrobble.setText(bundle.getString("SCROBBLE_SONGS")); // NOI18N
         jCheckBoxMenuItem_lastfmScrobble.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBoxMenuItem_lastfmScrobbleActionPerformed(evt);
@@ -908,10 +910,10 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jMenuBar1.add(jMenu2);
 
-        jMenu3.setText(bundle.getString("HELP") /* NLS: Help */ );
+        jMenu3.setText(bundle.getString("HELP")); // NOI18N
 
         jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/alert.gif"))); // NOI18N
-        jMenuItem1.setText(bundle.getString("ABOUT") /* NLS: About... */ );
+        jMenuItem1.setText(bundle.getString("ABOUT")); // NOI18N
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
@@ -919,7 +921,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
         jMenu3.add(jMenuItem1);
 
-        jMenuItem_checkVersion.setText(bundle.getString("CHECK_FOR_NEW_VERSION") /* NLS: Check for new version */ );
+        jMenuItem_checkVersion.setText(bundle.getString("CHECK_FOR_NEW_VERSION")); // NOI18N
         jMenuItem_checkVersion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem_checkVersionActionPerformed(evt);
@@ -999,7 +1001,7 @@ private void jMenuItem_stopActionPerformed(java.awt.event.ActionEvent evt) {//GE
     mpController.stopTrack();
     jProgressBar1.setValue(0);
     jProgressBar1.setString("");
-    setTitle(bundle.getString("EMPTY") /* NLS:  */ );
+    setTitle(Settings.getInstance().getWindowTitleText());
 }//GEN-LAST:event_jMenuItem_stopActionPerformed
 
 private void jMenuItem_clearplaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_clearplaylistActionPerformed
@@ -1141,7 +1143,7 @@ private void jLabel_linkHomepageOpheliaMouseClicked(java.awt.event.MouseEvent ev
 
 private void jMenuItem_checkVersionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_checkVersionActionPerformed
     if (mpController.isNewVersion()) {
-        int confirm = JOptionPane.showConfirmDialog(this, "New version is avaliable, launch browser to download?");
+        int confirm = JOptionPane.showConfirmDialog(this, java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("NEW_VERSION"));
         if (confirm == 0) {
             BrowserLaunch.openURL("http://wkjeldsen.dk/ophelia");
         }
@@ -1275,7 +1277,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
             jList_playlist1.setListData((Vector) arg);
         } else if (o instanceof ScrobbleStatus) {
             jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
-            jLabel_lastfmLastScrobble.setToolTipText("Your last scrobble to last.fm: " + ScrobbleStatus.getInstance().getLastPlayed());
+            jLabel_lastfmLastScrobble.setToolTipText(java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("YOUR_LAST_SCROBBLE_TO_LAST.FM") + ScrobbleStatus.getInstance().getLastPlayed());
         }
     }
 
@@ -1344,7 +1346,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
          */
         public void indexingAnimation() {
             while (plController.isIndexing()) {
-                jLabel_playlistcount.setText(bundle.getString("INDEXING") /* NLS: Indexing...  */  + plController.getTrackCount() + " tracks indexed ");
+                jLabel_playlistcount.setText(bundle.getString("INDEXING") /* NLS: Indexing...  */  + plController.getTrackCount() + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS_INDEXED"));
             }
             jLabel_playlistcount.setText(plController.getPlaylistStats());
         }
