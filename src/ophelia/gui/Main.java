@@ -612,7 +612,7 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jLabel2.setText("Add...");
+        jLabel2.setText(bundle.getString("ADD..."));
 
         jProgressBar1.setForeground(new java.awt.Color(204, 0, 0));
         jProgressBar1.setString("");
