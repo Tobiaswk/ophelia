@@ -34,7 +34,7 @@ import java.util.Observable;
  * when change of values occur */
 public class ScrobbleStatus extends Observable {
     
-    private final String NOTHING_SUBMITTED = "Nothing submitted";
+    private final String NOTHING_SUBMITTED = java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("NOTHING_SUBMITTED");
 
     private static ScrobbleStatus singleton;
     private String artist;
@@ -69,7 +69,7 @@ public class ScrobbleStatus extends Observable {
         if (artist == null && trackTitle == null) {
             return NOTHING_SUBMITTED;
         }
-        return trackTitle + " by " + artist + "";
+        return trackTitle + " (" + artist + ")";
     }
 
     @Override

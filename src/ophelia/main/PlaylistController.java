@@ -51,8 +51,12 @@ public class PlaylistController {
         return playlist.getTracks();
     }
 
-    public String getPlaylistStats() {
-        return playlist.getPlaylistStats();
+    public int getMP3TrackCount() {
+        return playlist.getMP3TrackCount();
+    }
+
+    public int getFLACTrackCount() {
+        return playlist.getFLACTrackCount();
     }
     
     public boolean isIndexing() {

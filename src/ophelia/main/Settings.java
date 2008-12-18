@@ -249,7 +249,7 @@ public class Settings {
                 "   <httpPlayerInfoPort>" + httpPlayerInfoPort + "</httpPlayerInfoPort>\n" +
                 "   <windowTitleText>" + windowTitleText + "</windowTitleText>\n" +
                 "   <trackInWindowTitle>" + trackInWindowTitle + "</trackInWindowTitle>\n" +
-                "<opheliaSettings/>";
+                "</opheliaSettings>";
     }
 
     public void setupConfiguration() {

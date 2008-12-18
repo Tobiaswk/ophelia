@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package ophelia.gui;
 
 import java.awt.event.KeyEvent;
-import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
@@ -49,7 +48,7 @@ public class Main extends javax.swing.JFrame implements Observer {
     PlaylistController plController;
     ExecutorService progressAnimationThread;
     GUIAnimation progressbarAnimation;
-    ResourceBundle bundle = ResourceBundle.getBundle("ophelia.gui.localization.MainResources"); 
+    ResourceBundle bundle = ResourceBundle.getBundle("ophelia.gui.localization.MainResources");
 
     /** Creates new form MainWindow */
     public Main() {
@@ -317,7 +316,7 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.LEFT);
 
-        jLabel10.setText("Default playlist filename:");
+        jLabel10.setText(bundle.getString("DEFAULT_PLAYLIST_NAME")); // NOI18N
 
         jTextField_playlistName.setText(Settings.getInstance().getDefaultPlaylistName());
         jTextField_playlistName.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -327,7 +326,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
 
         jCheckBox_loadPlaylistStartup.setSelected(Settings.getInstance().isLoadPlaylistStartup());
-        jCheckBox_loadPlaylistStartup.setText("<html>Initialize default playlist on startup (affects startup speed)</html>");
+        jCheckBox_loadPlaylistStartup.setText(bundle.getString("INITIALIZE_DEFAULT_PLAYLIST")); // NOI18N
         jCheckBox_loadPlaylistStartup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCheckBox_loadPlaylistStartupActionPerformed(evt);
@@ -367,9 +366,9 @@ public class Main extends javax.swing.JFrame implements Observer {
                 .addContainerGap())
         );
 
-        jTabbedPane2.addTab("General", jPanel5);
+        jTabbedPane2.addTab(bundle.getString("GENERAL_TAB"), jPanel5); // NOI18N
 
-        jLabel12.setText("Default window title:");
+        jLabel12.setText(bundle.getString("DEFAULT_WINDOWTITLE")); // NOI18N
 
         jTextField_windowTitle.setText(Settings.getInstance().getWindowTitleText());
         jTextField_windowTitle.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -455,14 +454,14 @@ public class Main extends javax.swing.JFrame implements Observer {
                 .addContainerGap())
         );
 
-        jTabbedPane2.addTab("Looks", jPanel6);
+        jTabbedPane2.addTab(bundle.getString("LOOKS_TAB"), jPanel6); // NOI18N
 
         jLabel7.setFont(jLabel7.getFont());
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/last.fm-big.png"))); // NOI18N
         jLabel7.setText("<html>Last.fm: <a href=http://www.last.fm>www.last.fm</a><br>Audioscrobble and statistics support</html>");
 
-        jLabel8.setText("Username:");
+        jLabel8.setText(bundle.getString("USERNAME")); // NOI18N
 
         jTextField_lastfmUsername.setText(Settings.getInstance().getLasfmUsername());
         jTextField_lastfmUsername.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -478,7 +477,7 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jLabel9.setText("Password:");
+        jLabel9.setText(bundle.getString("PASSWORD")); // NOI18N
 
         jButton_checkAuthentication.setText(bundle.getString("CHECK_AUTH")); // NOI18N
         jButton_checkAuthentication.addActionListener(new java.awt.event.ActionListener() {
@@ -1007,7 +1006,6 @@ private void jMenuItem_stopActionPerformed(java.awt.event.ActionEvent evt) {//GE
 private void jMenuItem_clearplaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_clearplaylistActionPerformed
     plController.clearPlaylist();
     jList_playlist1.setListData(new String[0]);
-    jLabel_playlistcount.setText(plController.getPlaylistStats());
 }//GEN-LAST:event_jMenuItem_clearplaylistActionPerformed
 
 private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -1054,9 +1052,9 @@ private void jPasswordField_lastfmPasswordFocusLost(java.awt.event.FocusEvent ev
 private void jButton_checkAuthenticationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_checkAuthenticationActionPerformed
     try {
         if (Scrobbler.newScrobbler(Settings.getInstance().getClientID(), Settings.getInstance().getOpheliaVersion(), Settings.getInstance().getLasfmUsername()).handshake(Settings.getInstance().getLasfmPassword()).ok()) {
-            JOptionPane.showMessageDialog(this, bundle.getString("AUTH_SUCCESS") /* NLS: Authentication success! */ );
+            JOptionPane.showMessageDialog(this, bundle.getString("AUTH_SUCCESS") /* NLS: Authentication success! */);
         } else {
-            JOptionPane.showMessageDialog(this, bundle.getString("AUTH_FAILED_CHECK_PSWD") /* NLS: Authentication failed! Check username or password! */ );
+            JOptionPane.showMessageDialog(this, bundle.getString("AUTH_FAILED_CHECK_PSWD") /* NLS: Authentication failed! Check username or password! */);
         }
     } catch (Exception ex) {
         //TODO
@@ -1071,7 +1069,6 @@ private void jMenuItem_savePlaylistActionPerformed(java.awt.event.ActionEvent ev
 private void jMenuItem_openPlaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_openPlaylistActionPerformed
     jFileChooser_playlistfile.setDialogType(JFileChooser.OPEN_DIALOG);
     jDialog_playlistchoose.setVisible(true);
-    jLabel_playlistcount.setText(plController.getPlaylistStats());
 }//GEN-LAST:event_jMenuItem_openPlaylistActionPerformed
 
 private void jFileChooser_playlistfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFileChooser_playlistfileActionPerformed
@@ -1148,7 +1145,7 @@ private void jMenuItem_checkVersionActionPerformed(java.awt.event.ActionEvent ev
             BrowserLaunch.openURL("http://wkjeldsen.dk/ophelia");
         }
     } else {
-        JOptionPane.showMessageDialog(this, bundle.getString("YOU_ARE_RUNNING_LATEST_VERSION") /* NLS: You are running the latest version */ );
+        JOptionPane.showMessageDialog(this, bundle.getString("YOU_ARE_RUNNING_LATEST_VERSION") /* NLS: You are running the latest version */);
     }
 }//GEN-LAST:event_jMenuItem_checkVersionActionPerformed
 
@@ -1165,7 +1162,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-    	java.awt.EventQueue.invokeLater(new Runnable() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
                 new Main().setVisible(true);
@@ -1275,6 +1272,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     public void update(Observable o, Object arg) {
         if (o instanceof Playlist) { /* its playlist array data */
             jList_playlist1.setListData((Vector) arg);
+            jLabel_playlistcount.setText(plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS") + " (" + plController.getMP3TrackCount() + " MP3, " + plController.getFLACTrackCount() + " FLAC) ");
         } else if (o instanceof ScrobbleStatus) {
             jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
             jLabel_lastfmLastScrobble.setToolTipText(java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("YOUR_LAST_SCROBBLE_TO_LAST.FM") + ScrobbleStatus.getInstance().getLastPlayed());
@@ -1346,9 +1344,9 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
          */
         public void indexingAnimation() {
             while (plController.isIndexing()) {
-                jLabel_playlistcount.setText(bundle.getString("INDEXING") /* NLS: Indexing...  */  + plController.getTrackCount() + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS_INDEXED"));
+                jLabel_playlistcount.setText(bundle.getString("INDEXING") /* NLS: Indexing...  */ + plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS_INDEXED"));
             }
-            jLabel_playlistcount.setText(plController.getPlaylistStats());
+            jLabel_playlistcount.setText(plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS") + " (" + plController.getMP3TrackCount() + " MP3, " + plController.getFLACTrackCount() + " FLAC) ");
         }
 
         public void run() {

@@ -63,17 +63,25 @@ public class Playlist extends Observable {
         return trackPlaylist.size();
     }
 
-    public String getPlaylistStats() {
+    public int getMP3TrackCount() {
+        return getTrackTypeCount(".mp3");
+    }
+
+    public int getFLACTrackCount() {
+        return getTrackTypeCount(".flac");
+    }
+
+    private int getTrackTypeCount(String endsWith) {
         int flacfiles = 0;
         int mp3files = 0;
         for (TrackWithID3 file : trackPlaylist) {
-            if (file.getAbsoluteFile().getName().endsWith(".flac")) {
+            if (file.getAbsoluteFile().getName().endsWith(endsWith)) {
                 flacfiles++;
-            } else if (file.getAbsoluteFile().getName().endsWith(".mp3")) {
+            } else if (file.getAbsoluteFile().getName().endsWith(endsWith)) {
                 mp3files++;
             }
         }
-        return trackPlaylist.size() + " Tracks (" + mp3files + " MP3, " + flacfiles + " FLAC) ";
+        return (endsWith.equals(".flac")) ? flacfiles : mp3files;
     }
 
     public boolean isIndexing() {
