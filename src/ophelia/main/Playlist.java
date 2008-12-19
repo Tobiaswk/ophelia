@@ -72,16 +72,13 @@ public class Playlist extends Observable {
     }
 
     private int getTrackTypeCount(String endsWith) {
-        int flacfiles = 0;
-        int mp3files = 0;
+        int count = 0;
         for (TrackWithID3 file : trackPlaylist) {
             if (file.getAbsoluteFile().getName().endsWith(endsWith)) {
-                flacfiles++;
-            } else if (file.getAbsoluteFile().getName().endsWith(endsWith)) {
-                mp3files++;
+                count++;
             }
         }
-        return (endsWith.equals(".flac")) ? flacfiles : mp3files;
+        return count;
     }
 
     public boolean isIndexing() {

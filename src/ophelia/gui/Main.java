@@ -612,7 +612,7 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jLabel2.setText(bundle.getString("ADD..."));
+        jLabel2.setText(bundle.getString("ADD...")); // NOI18N
 
         jProgressBar1.setForeground(new java.awt.Color(204, 0, 0));
         jProgressBar1.setString("");
@@ -726,7 +726,7 @@ public class Main extends javax.swing.JFrame implements Observer {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel11)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField_search, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE)
+                        .addComponent(jTextField_search, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
