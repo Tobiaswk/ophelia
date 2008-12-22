@@ -1,5 +1,6 @@
 0.1.1
 /*  
+	currently newest Ophelia build
 	this file is used by Ophelia to lookup new versions 
 	version number, on line 1, is equaled to the version of-
 	the Ophelia-client looking up
