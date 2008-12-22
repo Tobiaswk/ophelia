@@ -41,7 +41,7 @@ public class Settings {
     private String configurationData;
 
     /* last.fm configuration data */
-    private final String opheliaVersion = "0.1.1 (codename hamlet)";
+    private final String opheliaVersion = "0.1.1";
     private final String clientID = "oph"; //this clientid provided by last.fm
     private boolean lastfmScrobble = false;
     private String lasfmUsername = "";

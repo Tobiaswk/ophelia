@@ -32,7 +32,7 @@ import java.net.URLConnection;
  */
 public class UpdateComponent {
 
-    private final String versionCheckURL = "http://wkjeldsen.dk/ophelia/Ophelia.version";
+    private final String versionCheckURL = "http://ophelia.googlecode.com/svn/trunk/Ophelia.version";
 
     public boolean isNewVersion() {
         try {
@@ -41,6 +41,7 @@ public class UpdateComponent {
             DataInputStream in = new DataInputStream(urlc.getInputStream()); // To download
             BufferedReader read = new BufferedReader(new InputStreamReader(in));
             if (!read.readLine().equals(Settings.getInstance().getOpheliaVersion())) {
+                read.close();
                 return true;
             }
             read.close();
