@@ -968,7 +968,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenu3.setText(bundle.getString("HELP")); // NOI18N
 
         jMenuItem1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/alert.gif"))); // NOI18N
-        jMenuItem1.setText(bundle.getString("ABOUT")); // NOI18N
+        jMenuItem1.setText(bundle.getString("ABOUT...")); // NOI18N
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
