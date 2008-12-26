@@ -31,10 +31,9 @@ import net.roarsoftware.lastfm.scrobble.Source;
  */
 public class ScrobbleTask implements Runnable {
 
-    private static Scrobbler scrobbler; //nasty fix - avoid multiple handshakes
+    private Scrobbler scrobbler;
     private javazoom.jl.player.Player mp3Playing;
     private int taskMode;
-    private ScrobbleStatus scrobbleStatus;
 
     /**
      * @param taskMode 1, for submission to "Recently Listened Tracks"
@@ -43,13 +42,11 @@ public class ScrobbleTask implements Runnable {
     public ScrobbleTask(javazoom.jl.player.Player mp3Playing, int taskMode) {
         this.mp3Playing = mp3Playing;
         this.taskMode = taskMode;
-        this.scrobbleStatus = ScrobbleStatus.getInstance();
         /* perform a handshake with 3 retries if bad connection */
         performHandshake(3);
     }
 
     private void performHandshake(int retries) {
-        if (scrobbler == null) {
             scrobbler = Scrobbler.newScrobbler(Settings.getInstance().getClientID(), Settings.getInstance().getOpheliaVersion(), Settings.getInstance().getLasfmUsername());
             try {
                 if (!scrobbler.handshake(Settings.getInstance().getLasfmPassword()).ok() && retries != 0) {
@@ -58,7 +55,6 @@ public class ScrobbleTask implements Runnable {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }
     }
 
     /* this will submit to "Recently Listened Tracks" on lastfm */
@@ -67,19 +63,20 @@ public class ScrobbleTask implements Runnable {
             boolean success = scrobbler.submit(mp3Playing.getPlayingFile().getArtist(),
                     mp3Playing.getPlayingFile().getTitle(),
                     mp3Playing.getPlayingFile().getAlbum(),
-                    1000,
+                    mp3Playing.getPlayingFile().getLength(),
                     mp3Playing.getPlayingFile().getTrack(),
                     Source.USER,
                     System.currentTimeMillis() / 1000).ok();
             if (success) {
-                scrobbleStatus.setLastPlayed(mp3Playing.getPlayingFile().getArtist(), mp3Playing.getPlayingFile().getTitle());
+                ScrobbleStatus.getInstance().setLastPlayed(mp3Playing.getPlayingFile().getArtist(), mp3Playing.getPlayingFile().getTitle());
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    /* this will only submit to "Playing Now" status on lastfm */
+    /* this will only submit to "Playing Now" status on lastfm
+     * will be submitted every 15 seconds */
     private void mp3PlayingNowSubmit() {
         try {
             while (mp3Playing.isPlaying()) {

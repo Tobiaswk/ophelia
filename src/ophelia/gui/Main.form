@@ -243,7 +243,7 @@
                               <Font name="Tahoma" size="11" style="0"/>
                             </Property>
                             <Property name="rows" type="int" value="5"/>
-                            <Property name="text" type="java.lang.String" value="Tobias W. Kjeldsen &quot;tobiaswk&quot; (founder)&#xa;MiZhKa"/>
+                            <Property name="text" type="java.lang.String" value="Project founders:&#xa;  &#x9;&quot;tobiaswk&quot; Tobias W. Kjeldsen&#xa;Project members:&#xa;&#x9;MiZhKa"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -292,7 +292,7 @@
                               <Font name="Tahoma" size="11" style="0"/>
                             </Property>
                             <Property name="rows" type="int" value="5"/>
-                            <Property name="text" type="java.lang.String" value="ID3-tag support by Jens Vonderheide&#xa;http://www.vdheide.de &#xa;&#xa;MP3-decoding by Javazoom Team&#xa;http://www.javazoom.net &#xa;&#xa;FLAC-decoding by David R. Robison&#xa;http://www.jflac.sourceforge.net &#xa;&#xa;Last.fm API bindings for Java by Janni Kovacs&#xa;http://www.u-mass.de/lastfm &#xa;&#xa;Bitcon icons&#xa;http://www.somerandomdude.net/srd-projects/bitcons &#xa;&#xa;The Ophelia mascot icon by Troy Dunham&#xa;http://troyboydesign.com "/>
+                            <Property name="text" type="java.lang.String" value="ID3-tag support by Jens Vonderheide&#xa;- http://www.vdheide.de &#xa;&#xa;MP3-decoding by Javazoom Team&#xa;- http://www.javazoom.net &#xa;&#xa;FLAC-decoding by David R. Robison&#xa;- http://www.jflac.sourceforge.net &#xa;&#xa;Last.fm API bindings for Java by Janni Kovacs&#xa;- http://www.u-mass.de/lastfm &#xa;&#xa;Bitcon icons&#xa;- http://www.somerandomdude.net/srd-projects/bitcons &#xa;&#xa;The Ophelia mascot icon by Troy Dunham&#xa;- http://troyboydesign.com"/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -438,7 +438,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jCheckBox_loadPlaylistStartup" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="108" max="32767" attributes="0"/>
+                              <EmptySpace pref="122" max="32767" attributes="0"/>
                               <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -709,7 +709,7 @@
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                           <Image iconType="3" name="/ophelia/gui/last.fm-big.png"/>
                         </Property>
-                        <Property name="text" type="java.lang.String" value="&lt;html&gt;Last.fm: &lt;a href=http://www.last.fm&gt;www.last.fm&lt;/a&gt;&lt;br&gt;Audioscrobble and statistics support&lt;/html&gt;"/>
+                        <Property name="text" type="java.lang.String" value="&lt;html&gt;Last.fm: &lt;a href=http://www.last.fm&gt;www.last.fm&lt;/a&gt;&lt;br&gt;Music service that learns what you love...&lt;/html&gt;"/>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JLabel" name="jLabel8">
@@ -1141,7 +1141,9 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jTabbedPane1" alignment="0" pref="267" max="32767" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jProgressBar1" pref="154" max="32767" attributes="0"/>
+                          <Component id="jProgressBar1" pref="131" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jButton_lastfm_loved" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1184,6 +1186,7 @@
                       </Group>
                       <Component id="jButton_stop" min="-2" pref="20" max="-2" attributes="0"/>
                       <Component id="jProgressBar1" min="-2" pref="20" max="-2" attributes="0"/>
+                      <Component id="jButton_lastfm_loved" min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jTabbedPane1" pref="167" max="32767" attributes="0"/>
@@ -1431,6 +1434,19 @@
               <Image iconType="3" name="/ophelia/gui/search.gif"/>
             </Property>
             <Property name="alignmentX" type="float" value="0.5"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButton_lastfm_loved">
+          <Properties>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/ophelia/gui/heart.gif"/>
+            </Property>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="null"/>
+            </Property>
+            <Property name="enabled" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="Settings.getInstance().isLastfmScrobble()" type="code"/>
+            </Property>
           </Properties>
         </Component>
       </SubComponents>
