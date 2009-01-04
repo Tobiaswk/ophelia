@@ -134,6 +134,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jDialog_playlistchoose = new javax.swing.JDialog();
         jFileChooser_playlistfile = new javax.swing.JFileChooser();
         jButton1 = new javax.swing.JButton();
+        jScrollPane6 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton_addDirectory = new javax.swing.JButton();
@@ -151,6 +152,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jButton8 = new javax.swing.JButton();
         jToolBar_statusbar = new javax.swing.JToolBar();
         jLabel_playlistcount = new javax.swing.JLabel();
+        jSeparator7 = new javax.swing.JToolBar.Separator();
         jLabel_lastfmLastScrobble = new javax.swing.JLabel();
         jTextField_search = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
@@ -263,12 +265,11 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jTabbedPane3.addTab(bundle.getString("ABOUT"), jPanel_about); // NOI18N
 
-        jTextArea1.setBackground(java.awt.SystemColor.control);
         jTextArea1.setColumns(20);
         jTextArea1.setEditable(false);
         jTextArea1.setFont(new java.awt.Font("Tahoma", 0, 11));
         jTextArea1.setRows(5);
-        jTextArea1.setText("Project founders:\n  \t\"tobiaswk\" Tobias W. Kjeldsen\nProject members:\n\tMiZhKa");
+        jTextArea1.setText("Tobias W. Kjeldsen \"tobiaswk\"\nMiZhKa");
         jScrollPane3.setViewportView(jTextArea1);
 
         javax.swing.GroupLayout jPanel_authorsLayout = new javax.swing.GroupLayout(jPanel_authors);
@@ -284,12 +285,11 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jTabbedPane3.addTab(bundle.getString("AUTHORS"), jPanel_authors); // NOI18N
 
-        jTextArea2.setBackground(java.awt.SystemColor.control);
         jTextArea2.setColumns(20);
         jTextArea2.setEditable(false);
         jTextArea2.setFont(new java.awt.Font("Tahoma", 0, 11));
         jTextArea2.setRows(5);
-        jTextArea2.setText("ID3-tag support by Jens Vonderheide\n- http://www.vdheide.de \n\nMP3-decoding by Javazoom Team\n- http://www.javazoom.net \n\nFLAC-decoding by David R. Robison\n- http://www.jflac.sourceforge.net \n\nLast.fm API bindings for Java by Janni Kovacs\n- http://www.u-mass.de/lastfm \n\nBitcon icons\n- http://www.somerandomdude.net/srd-projects/bitcons \n\nThe Ophelia mascot icon by Troy Dunham\n- http://troyboydesign.com");
+        jTextArea2.setText("ID3-tag support by Jens Vonderheide\nhttp://www.vdheide.de \n\nMP3-decoding by Javazoom Team\nhttp://www.javazoom.net \n\nFLAC-decoding by David R. Robison\nhttp://www.jflac.sourceforge.net \n\nLast.fm API bindings for Java by Janni Kovacs\nhttp://www.u-mass.de/lastfm \n\nBitcon icons\nhttp://www.somerandomdude.net/srd-projects/bitcons \n\nThe Ophelia mascot icon by Troy Dunham\nhttp://troyboydesign.com");
         jScrollPane4.setViewportView(jTextArea2);
 
         javax.swing.GroupLayout jPanel_thanksandcreditLayout = new javax.swing.GroupLayout(jPanel_thanksandcredit);
@@ -305,7 +305,6 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jTabbedPane3.addTab(bundle.getString("THANKS_AND_CREDIT_GOES_TO"), jPanel_thanksandcredit); // NOI18N
 
-        jTextArea3.setBackground(java.awt.SystemColor.control);
         jTextArea3.setColumns(20);
         jTextArea3.setEditable(false);
         jTextArea3.setFont(new java.awt.Font("Tahoma", 0, 11));
@@ -746,6 +745,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jToolBar_statusbar.setFloatable(false);
         jToolBar_statusbar.setRollover(true);
         jToolBar_statusbar.add(jLabel_playlistcount);
+        jToolBar_statusbar.add(jSeparator7);
 
         jLabel_lastfmLastScrobble.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/last.fm_scrooble.png"))); // NOI18N
         jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
@@ -1319,12 +1319,14 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JToolBar.Separator jSeparator7;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
@@ -1344,7 +1346,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     public void update(Observable o, Object arg) {
         if (o instanceof Playlist) { /* its playlist array data */
             jList_playlist1.setListData((Vector) arg);
-            jLabel_playlistcount.setText(plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS") + " (" + plController.getMP3TrackCount() + " MP3, " + plController.getFLACTrackCount() + " FLAC) ");
+            jLabel_playlistcount.setText(plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS") + " (" + plController.getMP3TrackCount() + " MP3, " + plController.getFLACTrackCount() + " FLAC)");
         } else if (o instanceof ScrobbleStatus) {
             jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
             jLabel_lastfmLastScrobble.setToolTipText(java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("YOUR_LAST_SCROBBLE_TO_LAST.FM") + ScrobbleStatus.getInstance().getLastPlayed());
@@ -1418,7 +1420,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
             while (plController.isIndexing()) {
                 jLabel_playlistcount.setText(bundle.getString("INDEXING") /* NLS: Indexing...  */ + plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS_INDEXED"));
             }
-            jLabel_playlistcount.setText(plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS") + " (" + plController.getMP3TrackCount() + " MP3, " + plController.getFLACTrackCount() + " FLAC) ");
+            jLabel_playlistcount.setText(plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS") + " (" + plController.getMP3TrackCount() + " MP3, " + plController.getFLACTrackCount() + " FLAC)");
         }
 
         public void run() {
