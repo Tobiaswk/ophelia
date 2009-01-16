@@ -69,7 +69,7 @@ public class Settings {
     }
 
     private Settings() {
-        if (importLocalSettings()) {
+        if (loadLocalSettings()) {
             setupConfiguration();
         } else {
             setupNewConfiguration();
@@ -82,7 +82,7 @@ public class Settings {
 
     public void setLastfmScrobble(boolean LastfmScrobble) {
         this.lastfmScrobble = LastfmScrobble;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public String getDefaultPlaylistName() {
@@ -91,7 +91,7 @@ public class Settings {
 
     public void setDefaultPlaylistName(String defaultPlaylistName) {
         this.defaultPlaylistName = defaultPlaylistName;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public boolean isLoadPlaylistStartup() {
@@ -100,7 +100,7 @@ public class Settings {
 
     public void setLoadPlaylistStartup(boolean loadPlaylistStartup) {
         this.loadPlaylistStartup = loadPlaylistStartup;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public String getLasfmPassword() {
@@ -109,7 +109,7 @@ public class Settings {
 
     public void setLasfmPassword(String lasfmPassword) {
         this.lasfmPassword = lasfmPassword;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public String getLasfmUsername() {
@@ -118,7 +118,7 @@ public class Settings {
 
     public void setLasfmUsername(String lasfmUsername) {
         this.lasfmUsername = lasfmUsername;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public boolean isTrayClose() {
@@ -127,7 +127,7 @@ public class Settings {
 
     public void setTrayClose(boolean trayClose) {
         this.trayClose = trayClose;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public boolean isTrayIcon() {
@@ -136,7 +136,7 @@ public class Settings {
 
     public void setTrayIcon(boolean trayIcon) {
         this.trayIcon = trayIcon;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public boolean isTrayMinimize() {
@@ -145,7 +145,7 @@ public class Settings {
 
     public void setTrayMinimize(boolean trayMinimize) {
         this.trayMinimize = trayMinimize;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public boolean isTrackInWindowTitle() {
@@ -154,7 +154,7 @@ public class Settings {
 
     public void setTrackInWindowTitle(boolean trackInWindowTitle) {
         this.trackInWindowTitle = trackInWindowTitle;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public String getWindowTitleText() {
@@ -163,7 +163,7 @@ public class Settings {
 
     public void setWindowTitleText(String windowTitleText) {
         this.windowTitleText = windowTitleText;
-        exportLocalSettings();
+        saveLocalSettings();
     }
 
     public boolean isEasterEgg() {
@@ -272,7 +272,7 @@ public class Settings {
         }
     }
 
-    private boolean importLocalSettings() {
+    private boolean loadLocalSettings() {
         configurationData = "";
         try {
             BufferedReader read = new BufferedReader(new FileReader(new File(configurationFileName)));
@@ -286,7 +286,7 @@ public class Settings {
         return !configurationData.isEmpty();
     }
 
-    private boolean exportLocalSettings() {
+    private boolean saveLocalSettings() {
         setupNewConfiguration();
         try {
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(new File(configurationFileName))));
