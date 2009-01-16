@@ -82,7 +82,7 @@ public class Settings {
 
     public void setLastfmScrobble(boolean LastfmScrobble) {
         this.lastfmScrobble = LastfmScrobble;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public String getDefaultPlaylistName() {
@@ -91,7 +91,7 @@ public class Settings {
 
     public void setDefaultPlaylistName(String defaultPlaylistName) {
         this.defaultPlaylistName = defaultPlaylistName;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public boolean isLoadPlaylistStartup() {
@@ -100,7 +100,7 @@ public class Settings {
 
     public void setLoadPlaylistStartup(boolean loadPlaylistStartup) {
         this.loadPlaylistStartup = loadPlaylistStartup;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public String getLasfmPassword() {
@@ -109,7 +109,7 @@ public class Settings {
 
     public void setLasfmPassword(String lasfmPassword) {
         this.lasfmPassword = lasfmPassword;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public String getLasfmUsername() {
@@ -118,7 +118,7 @@ public class Settings {
 
     public void setLasfmUsername(String lasfmUsername) {
         this.lasfmUsername = lasfmUsername;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public boolean isTrayClose() {
@@ -127,7 +127,7 @@ public class Settings {
 
     public void setTrayClose(boolean trayClose) {
         this.trayClose = trayClose;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public boolean isTrayIcon() {
@@ -136,7 +136,7 @@ public class Settings {
 
     public void setTrayIcon(boolean trayIcon) {
         this.trayIcon = trayIcon;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public boolean isTrayMinimize() {
@@ -145,7 +145,7 @@ public class Settings {
 
     public void setTrayMinimize(boolean trayMinimize) {
         this.trayMinimize = trayMinimize;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public boolean isTrackInWindowTitle() {
@@ -154,7 +154,7 @@ public class Settings {
 
     public void setTrackInWindowTitle(boolean trackInWindowTitle) {
         this.trackInWindowTitle = trackInWindowTitle;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public String getWindowTitleText() {
@@ -163,7 +163,7 @@ public class Settings {
 
     public void setWindowTitleText(String windowTitleText) {
         this.windowTitleText = windowTitleText;
-        eksportLocalSettings();
+        exportLocalSettings();
     }
 
     public boolean isEasterEgg() {
@@ -286,7 +286,7 @@ public class Settings {
         return !configurationData.isEmpty();
     }
 
-    private boolean eksportLocalSettings() {
+    private boolean exportLocalSettings() {
         setupNewConfiguration();
         try {
             PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(new File(configurationFileName))));
