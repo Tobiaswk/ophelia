@@ -1136,9 +1136,7 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jTabbedPane1" alignment="0" pref="267" max="32767" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="jProgressBar1" pref="131" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jButton_lastfm_loved" min="-2" max="-2" attributes="0"/>
+                          <Component id="jProgressBar1" pref="154" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1181,7 +1179,6 @@
                       </Group>
                       <Component id="jButton_stop" min="-2" pref="20" max="-2" attributes="0"/>
                       <Component id="jProgressBar1" min="-2" pref="20" max="-2" attributes="0"/>
-                      <Component id="jButton_lastfm_loved" min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jTabbedPane1" pref="167" max="32767" attributes="0"/>
@@ -1431,19 +1428,6 @@
               <Image iconType="3" name="/ophelia/gui/search.gif"/>
             </Property>
             <Property name="alignmentX" type="float" value="0.5"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JButton" name="jButton_lastfm_loved">
-          <Properties>
-            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ophelia/gui/heart.gif"/>
-            </Property>
-            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-              <Border info="null"/>
-            </Property>
-            <Property name="enabled" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="Settings.getInstance().isLastfmScrobble()" type="code"/>
-            </Property>
           </Properties>
         </Component>
       </SubComponents>

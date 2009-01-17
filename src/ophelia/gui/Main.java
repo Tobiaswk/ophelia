@@ -156,7 +156,6 @@ public class Main extends javax.swing.JFrame implements Observer {
         jLabel_lastfmLastScrobble = new javax.swing.JLabel();
         jTextField_search = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
-        jButton_lastfm_loved = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu_addFiles = new javax.swing.JMenu();
         jMenuItem_addFiles = new javax.swing.JMenuItem();
@@ -762,10 +761,6 @@ public class Main extends javax.swing.JFrame implements Observer {
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/search.gif"))); // NOI18N
         jLabel11.setAlignmentX(0.5F);
 
-        jButton_lastfm_loved.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/heart.gif"))); // NOI18N
-        jButton_lastfm_loved.setBorder(null);
-        jButton_lastfm_loved.setEnabled(Settings.getInstance().isLastfmScrobble());
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -775,9 +770,7 @@ public class Main extends javax.swing.JFrame implements Observer {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton_lastfm_loved)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -812,8 +805,7 @@ public class Main extends javax.swing.JFrame implements Observer {
                             .addComponent(jLabel1))
                         .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jButton_stop, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton_lastfm_loved, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1242,7 +1234,6 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JButton jButton_addDirectory;
     private javax.swing.JButton jButton_addFiles;
     private javax.swing.JButton jButton_checkAuthentication;
-    private javax.swing.JButton jButton_lastfm_loved;
     private javax.swing.JButton jButton_play;
     private javax.swing.JButton jButton_stop;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
