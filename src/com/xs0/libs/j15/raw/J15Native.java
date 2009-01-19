@@ -3,6 +3,8 @@
 
 package com.xs0.libs.j15.raw;
 
+import java.io.File;
+
 /**
  * This class is a holder for the native LCD functions. As all the methods are static, 
  * it can't be instantiated. Refer to the Logitech LCD SDK for detailed documentation
@@ -328,10 +330,11 @@ public final class J15Native
 	private static boolean libLoaded;
 	static {
 		try {
-			System.loadLibrary("J15_Win32");
+			System.load("C:\\Users\\Tobias W. Kjeldsen\\Documents\\NetBeansProjects\\Ophelia\\src\\J15_Win32.dll");
 			libLoaded = true;
 		} catch (Throwable e) {
 			libLoaded = false;
+            System.out.println(e.getMessage());
 		}
 	}
 }
