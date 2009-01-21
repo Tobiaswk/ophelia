@@ -189,8 +189,26 @@ public class Playlist extends Observable {
         public Vector<TrackWithID3> addTracks(String playlistFilename) {
             ArrayList<File> result = new ArrayList<File>();
             try {
-                BufferedReader in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFilename)));
-                while (in_test.ready()) {
+            	
+                /* [18-Jan-2008] 
+                 * MiZhka: FileNotFoundException patch start
+                 * One line commented, block is added
+                 */ 
+            	
+            	//BufferedReader in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFilename)));
+            	
+            	BufferedReader in_test;
+                try{
+                	in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFilename)));
+                }catch(FileNotFoundException e){
+                	File f = new File(playlistFilename);
+                	f.createNewFile();
+                	in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFilename)));
+                }
+                
+                // MiZhka: FileNotFoundException patch end
+                
+            	while (in_test.ready()) {
                     result.add(new File(in_test.readLine()));
                 }
                 in_test.close();
