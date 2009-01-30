@@ -20,6 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package ophelia.gui;
 
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
@@ -30,6 +38,7 @@ import java.util.concurrent.Executors;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import net.roarsoftware.lastfm.scrobble.Scrobbler;
 import ophelia.main.MediaPlayerController;
 import ophelia.main.Playlist;
@@ -44,28 +53,36 @@ import ophelia.main.TrackWithID3;
  */
 public class Main extends javax.swing.JFrame implements Observer {
 
-    MediaPlayerController mpController;
-    PlaylistController plController;
-    ExecutorService progressAnimationThread;
-    GUIAnimation progressbarAnimation;
-    ResourceBundle bundle = ResourceBundle.getBundle("ophelia.gui.localization.MainResources");
+    private MediaPlayerController mpController;
+    private PlaylistController plController;
+    private ExecutorService progressAnimationThread;
+    private GUIAnimation progressbarAnimation;
+    private ResourceBundle bundle = ResourceBundle.getBundle("ophelia.gui.localization.MainResources");
+    private TrayIcon trayIcon;
 
     /** Creates new form MainWindow */
     public Main() {
-        mpController = new MediaPlayerController();
-        plController = new PlaylistController();
-        progressAnimationThread = Executors.newFixedThreadPool(1);
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         initComponents();
-        this.setIconImage(this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png")));
-        jFrame_about.setIconImage(this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png")));
-        jFrame_settings.setIconImage(this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png")));
-        jDialog_musicchoose.setIconImage(this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png")));
-        jDialog_playlistchoose.setIconImage((this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png"))));
+        mpController = new MediaPlayerController();
+        plController = new PlaylistController();
+        /* used for animation in gui */
+        progressAnimationThread = Executors.newFixedThreadPool(1);
+
+        Image ophelia_icon = this.getToolkit().getImage(getClass().getResource("ophelia-mascot.png"));
+        /* we setup the trayicon */
+        trayIcon = new TrayIcon(ophelia_icon);
+        setUpTrayIcon();
+
+        this.setIconImage(ophelia_icon);
+        jFrame_about.setIconImage(ophelia_icon);
+        jFrame_settings.setIconImage(ophelia_icon);
+        jDialog_musicchoose.setIconImage(ophelia_icon);
+        jDialog_playlistchoose.setIconImage(ophelia_icon);
         jDialog_musicchoose.setSize(520, 300);
         jDialog_playlistchoose.setSize(520, 300);
         jFrame_about.setSize(430, 400);
@@ -121,7 +138,6 @@ public class Main extends javax.swing.JFrame implements Observer {
         jCheckBox_trackInWindow = new javax.swing.JCheckBox();
         jCheckBox_trayIcon = new javax.swing.JCheckBox();
         jCheckBox_trayClose = new javax.swing.JCheckBox();
-        jCheckBox_trayMinimize = new javax.swing.JCheckBox();
         jButton3 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
@@ -456,14 +472,6 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jCheckBox_trayMinimize.setSelected(Settings.getInstance().isTrayMinimize());
-        jCheckBox_trayMinimize.setText(bundle.getString("MINIMIZE_TO_TRAY")); // NOI18N
-        jCheckBox_trayMinimize.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox_trayMinimizeActionPerformed(evt);
-            }
-        });
-
         jButton3.setText(bundle.getString("RESTORE_DEFAULTS")); // NOI18N
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
@@ -476,9 +484,8 @@ public class Main extends javax.swing.JFrame implements Observer {
                     .addComponent(jCheckBox_trayIcon)
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGap(21, 21, 21)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBox_trayMinimize)
-                            .addComponent(jCheckBox_trayClose)))
+                        .addComponent(jCheckBox_trayClose)
+                        .addGap(14, 14, 14))
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(jCheckBox_trackInWindow))
@@ -502,9 +509,7 @@ public class Main extends javax.swing.JFrame implements Observer {
                 .addComponent(jCheckBox_trayIcon)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCheckBox_trayClose)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox_trayMinimize)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
                 .addComponent(jButton3)
                 .addContainerGap())
         );
@@ -1082,15 +1087,13 @@ private void jTextField_playlistNameFocusLost(java.awt.event.FocusEvent evt) {//
 
 private void jCheckBox_trayIconActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_trayIconActionPerformed
     Settings.getInstance().setTrayIcon(jCheckBox_trayIcon.isSelected());
+    setUpTrayIcon();
 }//GEN-LAST:event_jCheckBox_trayIconActionPerformed
 
 private void jCheckBox_trayCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_trayCloseActionPerformed
     Settings.getInstance().setTrayClose(jCheckBox_trayClose.isSelected());
+    setUpTrayIcon();
 }//GEN-LAST:event_jCheckBox_trayCloseActionPerformed
-
-private void jCheckBox_trayMinimizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_trayMinimizeActionPerformed
-    Settings.getInstance().setTrayMinimize(jCheckBox_trayMinimize.isSelected());
-}//GEN-LAST:event_jCheckBox_trayMinimizeActionPerformed
 
 private void jCheckBox_lastfmScrobbleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_lastfmScrobbleActionPerformed
     Settings.getInstance().setLastfmScrobble(jCheckBox_lastfmScrobble.isSelected());
@@ -1243,7 +1246,6 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JCheckBox jCheckBox_trackInWindow;
     private javax.swing.JCheckBox jCheckBox_trayClose;
     private javax.swing.JCheckBox jCheckBox_trayIcon;
-    private javax.swing.JCheckBox jCheckBox_trayMinimize;
     private javax.swing.JDialog jDialog_musicchoose;
     private javax.swing.JDialog jDialog_playlistchoose;
     private javax.swing.JFileChooser jFileChooser_musicfile;
@@ -1331,6 +1333,55 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JToolBar jToolBar_statusbar;
     // End of variables declaration//GEN-END:variables
 
+    /* this method loads and setup the trayicon and associated menuitems  */
+    private void setUpTrayIcon() {
+        if (SystemTray.isSupported() && Settings.getInstance().isTrayIcon()) {
+            if (Settings.getInstance().isTrayClose()) {
+                setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+            } else {
+                setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            }
+            ActionListener exit_waip_Listener = new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    System.exit(1);
+                }
+            };
+
+            ActionListener show_waip_Listener = new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    if (isVisible()) {
+                        setVisible(false);
+                    } else {
+                        setVisible(true);
+                    }
+                }
+            };
+
+            PopupMenu popup = new PopupMenu();
+            MenuItem quit_waip = new MenuItem("Quit Ophelia");
+            MenuItem show_waip = new MenuItem("Show/Hide Ophelia");
+            quit_waip.addActionListener(exit_waip_Listener);
+            show_waip.addActionListener(show_waip_Listener);
+            popup.add(show_waip);
+            popup.add(quit_waip);
+
+            SystemTray tray = SystemTray.getSystemTray();
+            trayIcon.setPopupMenu(popup);
+            trayIcon.setImageAutoSize(true);
+            trayIcon.addActionListener(show_waip_Listener);
+            try {
+                tray.add(trayIcon);
+            } catch (AWTException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            SystemTray.getSystemTray().remove(trayIcon);
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        }
+    }
+
     /**
      * we use observer-pattern when updating our lists in gui, playlist etc. 
      */
@@ -1340,7 +1391,8 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
             jLabel_playlistcount.setText(plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS") + " (" + plController.getMP3TrackCount() + " MP3, " + plController.getFLACTrackCount() + " FLAC)");
         } else if (o instanceof ScrobbleStatus) {
             jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
-            jLabel_lastfmLastScrobble.setToolTipText(java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("YOUR_LAST_SCROBBLE_TO_LAST.FM") + ScrobbleStatus.getInstance().getLastPlayed());
+            String toolTip = java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("YOUR_LAST_SCROBBLE_TO_LAST.FM") + " " + ScrobbleStatus.getInstance().getLastPlayed();
+            jLabel_lastfmLastScrobble.setToolTipText(toolTip);
         }
     }
 
@@ -1378,6 +1430,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
                 nextTrack = (TrackWithID3) jList_playlist1.getModel().getElementAt(jList_playlist1.getSelectedIndex() + 1);
             }
             jProgressBar1.setString(selectedTrack.getOSDStatus());
+            trayIcon.setToolTip(selectedTrack.getOSDStatus());
             try {
                 if (Settings.getInstance().isTrackInWindowTitle()) {
                     setTitle(Settings.getInstance().getWindowTitleText() + selectedTrack.getTitle());
