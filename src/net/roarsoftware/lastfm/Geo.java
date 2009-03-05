@@ -96,6 +96,34 @@ public class Geo {
 	}
 
 	/**
+	 * Get all events in a specific location by country or city name.<br/>
+	 * This method only returns the specified page of a paginated result.
+	 *
+	 * @param latitude Latitude
+	 * @param longitude Longitude
+	 * @param page A page number for pagination
+	 * @param apiKey A Last.fm API key.
+	 * @return a {@link PaginatedResult} containing a list of events
+	 */
+	public static PaginatedResult<Event> getEvents(double latitude, double longitude, int page, String apiKey) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("page", String.valueOf(page));
+		params.put("lat", String.valueOf(latitude));
+		params.put("long", String.valueOf(longitude));
+		Result result = Caller.getInstance().call("geo.getEvents", apiKey, params);
+		if (!result.isSuccessful())
+			return new PaginatedResult<Event>(0, 0, Collections.<Event>emptyList());
+		DomElement element = result.getContentElement();
+		List<Event> events = new ArrayList<Event>();
+		for (DomElement domElement : element.getChildren("event")) {
+			events.add(Event.eventFromElement(domElement));
+		}
+		int currentPage = Integer.valueOf(element.getAttribute("page"));
+		int totalPages = Integer.valueOf(element.getAttribute("totalpages"));
+		return new PaginatedResult<Event>(page, totalPages, events);
+	}
+
+	/**
 	 * Get the most popular artists on Last.fm by country
 	 *
 	 * @param country A country name, as defined by the ISO 3166-1 country names standard

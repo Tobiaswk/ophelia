@@ -66,7 +66,7 @@ public class ScrobbleTask implements Runnable {
                     mp3Playing.getPlayingFile().getLength(),
                     mp3Playing.getPlayingFile().getTrack(),
                     Source.USER,
-                    System.currentTimeMillis() / 1000).ok();
+                    mp3Playing.getPlayingFile().getLength()).ok();
             if (success) {
                 ScrobbleStatus.getInstance().setLastPlayed(mp3Playing.getPlayingFile().getArtist(), mp3Playing.getPlayingFile().getTitle());
             }

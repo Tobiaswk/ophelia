@@ -24,6 +24,12 @@ public enum Source {
 	PERSONALIZED_BROADCAST("E"),
 
 	/**
+	 * Last.fm (any mode). In this case, the 5-digit Last.fm recommendation key must be appended to this source ID
+	 * to prove the validity of the submission (for example, "o[0]=L1b48a").
+	 */
+	LAST_FM("L"),
+
+	/**
 	 * Source unknown.
 	 */
 	UNKNOWN("U");

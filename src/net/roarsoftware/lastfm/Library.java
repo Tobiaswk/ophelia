@@ -253,5 +253,38 @@ public class Library {
 		return tracks;
 	}
 
+	/**
+	 * Add an artist to a user's Last.fm library
+	 *
+	 * @param artist The artist name you wish to add
+	 * @param session A Session instance
+	 * @return the result of the operation
+	 */
+	public static Result addArtist(String artist, Session session) {
+		return Caller.getInstance().call("Library.addArtist", session, "artist", artist);
+	}
 
+	/**
+	 * Add an album to a user's Last.fm library
+	 *
+	 * @param artist The artist that composed the track
+	 * @param album The album name you wish to add
+	 * @param session A Session instance
+	 * @return the result of the operation
+	 */
+	public static Result addAlbum(String artist, String album, Session session) {
+		return Caller.getInstance().call("Library.addAlbum", session, "artist", artist, "album", album);
+	}
+
+	/**
+	 * Add a track to a user's Last.fm library
+	 *
+	 * @param artist The artist that composed the track
+	 * @param track The track name you wish to add
+	 * @param session A Session instance
+	 * @return the result of the operation
+	 */
+	public static Result addTrack(String artist, String track, Session session) {
+		return Caller.getInstance().call("Library.addTrack", session, "artist", artist, "track", track);
+	}
 }

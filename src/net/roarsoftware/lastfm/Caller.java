@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,6 +23,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import net.roarsoftware.lastfm.Result.Status;
+import net.roarsoftware.lastfm.cache.Cache;
+import net.roarsoftware.lastfm.cache.FileSystemCache;
 import static net.roarsoftware.util.StringUtilities.encode;
 import static net.roarsoftware.util.StringUtilities.map;
 import static net.roarsoftware.util.StringUtilities.md5;
@@ -37,22 +40,23 @@ import static net.roarsoftware.util.StringUtilities.md5;
  */
 public class Caller {
 
-	private static final String API_ROOT = "http://ws.audioscrobbler.com/2.0/";
+	private static final String PARAM_API_KEY = "api_key";
+	private static final String PARAM_METHOD = "method";
+
+	private static final String DEFAULT_API_ROOT = "http://ws.audioscrobbler.com/2.0/";
 	private static final Caller instance = new Caller();
 
-	private DocumentBuilder documentBuilder;
+	private String apiRootUrl = DEFAULT_API_ROOT;
+
 	private Proxy proxy;
 	private String userAgent = "tst";
 
 	private boolean debugMode = false;
 
+	private Cache cache;
+
 	private Caller() {
-		try {
-			documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			// better never happens
-			throw new RuntimeException(e);
-		}
+		cache = new FileSystemCache();
 	}
 
 	/**
@@ -62,6 +66,15 @@ public class Caller {
 	 */
 	public static Caller getInstance() {
 		return instance;
+	}
+
+	/**
+	 * Set api root url.
+	 *
+	 * @param apiRootUrl new api root url
+	 */
+	public void setApiRootUrl(String apiRootUrl) {
+		this.apiRootUrl = apiRootUrl;
 	}
 
 	/**
@@ -94,97 +107,119 @@ public class Caller {
 		this.debugMode = debugMode;
 	}
 
-	public Result call(String method, String apiKey, Map<String, String> params) throws CallException {
-		return call(buildUrl(method, params, "api_key", apiKey));
+	/**
+	 * Returns the current {@link Cache}.
+	 *
+	 * @return the Cache
+	 */
+	public Cache getCache() {
+		return cache;
+	}
+
+	/**
+	 * Sets the active {@link Cache}. May be <code>null</code> to disable caching.
+	 *
+	 * @param cache the new Cache or <code>null</code>
+	 */
+	public void setCache(Cache cache) {
+		this.cache = cache;
 	}
 
 	public Result call(String method, String apiKey, String... params) throws CallException {
-		return call(buildUrl(method, map(params), "api_key", apiKey));
+		return call(method, apiKey, map(params));
 	}
 
-	private Result call(String url) throws CallException {
-		try {
-			if (debugMode)
-				System.out.println("call: " + url);
-			URL u = new URL(url);
-			HttpURLConnection urlConnection;
-			if (proxy != null)
-				urlConnection = (HttpURLConnection) u.openConnection(proxy);
-			else
-				urlConnection = (HttpURLConnection) u.openConnection();
-			urlConnection.setRequestProperty("User-Agent", userAgent);
-			int responseCode = urlConnection.getResponseCode();
-			InputStream httpInput;
-			if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-				httpInput = urlConnection.getErrorStream();
-			} else if (responseCode != 200) {
-				return Result.createHttpErrorResult(responseCode, urlConnection.getResponseMessage());
-			} else {
-				httpInput = urlConnection.getInputStream();
-			}
-			Document document = documentBuilder.parse(httpInput);
-			Element root = document.getDocumentElement(); // lfm element
-			String statusString = root.getAttribute("status");
-			Status status = "ok".equals(statusString) ? Status.OK : Status.FAILED;
-			if (status == Status.FAILED) {
-				Element error = (Element) root.getElementsByTagName("error").item(0);
-				int errorCode = Integer.parseInt(error.getAttribute("code"));
-				String message = error.getTextContent();
-				if (debugMode)
-					System.err.printf("Failed. Code: %d, Error: %s%n", errorCode, message);
-				return Result.createRestErrorResult(errorCode, message);
-			}
-			return Result.createOkResult(document);
-		} catch (IOException e) {
-			throw new CallException(e);
-		} catch (SAXException e) {
-			throw new CallException(e);
-		}
+	public Result call(String method, String apiKey, Map<String, String> params) throws CallException {
+		return call(method, apiKey, params, null);
 	}
 
 	public Result call(String method, Session session, String... params) {
-		return call(method, session, map(params));
+		return call(method, session.getApiKey(), map(params), session);
 	}
 
 	public Result call(String method, Session session, Map<String, String> params) {
-		params.put("api_key", session.getApiKey());
-		params.put("sk", session.getKey());
-		String sig = Authenticator.createSignature(method, params, session.getSecret());
-		params.put("api_sig", sig);
-		String url = API_ROOT;
+		return call(method, session.getApiKey(), params, session);
+	}
+
+	/**
+	 * Performs the web-service call. If the <code>session</code> parameter is <code>non-null</code> then an
+	 * authenticated call is made. If it's <code>null</code> then an unauthenticated call is made.<br/>
+	 * The <code>apiKey</code> parameter is always required, even when a valid session is passed to this method.
+	 *
+	 * @param method The method to call
+	 * @param apiKey A Last.fm API key
+	 * @param params Parameters
+	 * @param session A Session instance or <code>null</code>
+	 * @return the result of the operation
+	 */
+	private Result call(String method, String apiKey, Map<String, String> params, Session session) {
+		params = new HashMap<String, String>(params); // create new Map in case params is an immutable Map
+		InputStream inputStream = null;
+		// try to load from cache
+		String cacheEntryName = Cache.createCacheEntryName(method, params);
+		if (session == null && cache != null) {
+			if (cache.contains(cacheEntryName) && !cache.isExpired(cacheEntryName)) {
+				inputStream = cache.load(cacheEntryName);
+			}
+		}
+		if (inputStream == null) {
+			params.put(PARAM_API_KEY, apiKey);
+			if (session != null) {
+				params.put("sk", session.getKey());
+				String sig = Authenticator.createSignature(method, params, session.getSecret());
+				params.put("api_sig", sig);
+			}
+			try {
+				HttpURLConnection urlConnection = openConnection(apiRootUrl);
+				urlConnection.setRequestMethod("POST");
+				urlConnection.setDoOutput(true);
+				OutputStream outputStream = urlConnection.getOutputStream();
+				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+				String post = buildParameterQueue(method, params);
+				if (debugMode) {
+					System.out.println("body: " + post);
+				}
+				writer.write(post);
+				writer.close();
+				int responseCode = urlConnection.getResponseCode();
+				if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+					inputStream = urlConnection.getErrorStream();
+				} else if (responseCode != HttpURLConnection.HTTP_OK) {
+					return Result.createHttpErrorResult(responseCode, urlConnection.getResponseMessage());
+				} else {
+					inputStream = urlConnection.getInputStream();
+					if (cache != null) {
+						long expires = urlConnection.getHeaderFieldDate("Expires", -1);
+						if (expires == -1) {
+							long expirationTime = cache.getExpirationPolicy().getExpirationTime(method, params);
+							if (expirationTime > 0) {
+								if (expirationTime == Long.MAX_VALUE) {
+									expires = Long.MAX_VALUE;
+								} else {
+									expires = System.currentTimeMillis() + expirationTime;
+								}
+							}
+						}
+						if (expires != -1) {
+							cache.store(cacheEntryName, inputStream, expires); // if data wasn't cached store new result
+							inputStream = cache.load(cacheEntryName);
+							if (inputStream == null)
+								throw new CallException("caching failed.");
+						}
+					}
+				}
+			} catch (IOException e) {
+				throw new CallException(e);
+			}
+		}
 		try {
-			URL u = new URL(url);
-			HttpURLConnection urlConnection;
-			if (proxy != null)
-				urlConnection = (HttpURLConnection) u.openConnection(proxy);
-			else
-				urlConnection = (HttpURLConnection) u.openConnection();
-			urlConnection.setRequestMethod("POST");
-			urlConnection.setRequestProperty("User-Agent", userAgent);
-			urlConnection.setDoOutput(true);
-			OutputStream outputStream = urlConnection.getOutputStream();
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-			String post = buildParameterQueue(method, params);
-			if (debugMode) {
-				System.out.println("call: " + url);
-				System.out.println("body: " + post);
-			}
-			writer.write(post);
-			writer.close();
-			int responseCode = urlConnection.getResponseCode();
-			InputStream httpInput;
-			if (responseCode == HttpURLConnection.HTTP_FORBIDDEN || responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-				httpInput = urlConnection.getErrorStream();
-			} else if (responseCode != 200) {
-				return Result.createHttpErrorResult(responseCode, urlConnection.getResponseMessage());
-			} else {
-				httpInput = urlConnection.getInputStream();
-			}
-			Document document = documentBuilder.parse(httpInput);
+			Document document = newDocumentBuilder().parse(inputStream);
 			Element root = document.getDocumentElement(); // lfm element
 			String statusString = root.getAttribute("status");
 			Status status = "ok".equals(statusString) ? Status.OK : Status.FAILED;
 			if (status == Status.FAILED) {
+				if (cache != null)
+					cache.remove(cacheEntryName); // if request was failed remove from cache
 				Element error = (Element) root.getElementsByTagName("error").item(0);
 				int errorCode = Integer.parseInt(error.getAttribute("code"));
 				String message = error.getTextContent();
@@ -200,14 +235,33 @@ public class Caller {
 		}
 	}
 
-	private String buildUrl(String method, Map<String, String> params, String... strings) {
-		if (strings.length % 2 != 0)
-			throw new IllegalArgumentException("strings.length % 2 != 0");
-		StringBuilder builder = new StringBuilder(100);
-		builder.append(API_ROOT);
-		builder.append('?');
-		builder.append(buildParameterQueue(method, params, strings));
-		return builder.toString();
+	private DocumentBuilder newDocumentBuilder() {
+		try {
+			return DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			// better never happens
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Creates a new {@link HttpURLConnection}, sets the proxy, if available, and sets the User-Agent property.
+	 *
+	 * @param url URL to connect to
+	 * @return a new connection.
+	 * @throws IOException if an I/O exception occurs.
+	 */
+	public HttpURLConnection openConnection(String url) throws IOException {
+		if (isDebugMode())
+			System.out.println("open: " + url);
+		URL u = new URL(url);
+		HttpURLConnection urlConnection;
+		if (proxy != null)
+			urlConnection = (HttpURLConnection) u.openConnection(proxy);
+		else
+			urlConnection = (HttpURLConnection) u.openConnection();
+		urlConnection.setRequestProperty("User-Agent", userAgent);
+		return urlConnection;
 	}
 
 	private String buildParameterQueue(String method, Map<String, String> params, String... strings) {

@@ -1,9 +1,11 @@
 package net.roarsoftware.lastfm;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import static net.roarsoftware.util.StringUtilities.isMD5;
 import static net.roarsoftware.util.StringUtilities.map;
 import static net.roarsoftware.util.StringUtilities.md5;
 import net.roarsoftware.xml.DomElement;
@@ -25,14 +27,16 @@ public class Authenticator {
 	 * Create a web service session for a user. Used for authenticating a user when the password can be inputted by the user.
 	 *
 	 * @param username last.fm username
-	 * @param password last.fm password
+	 * @param password last.fm password in cleartext or 32-char md5 string
 	 * @param apiKey The API key
 	 * @param secret Your last.fm API secret
 	 * @return a Session instance
 	 * @see Session
 	 */
 	public static Session getMobileSession(String username, String password, String apiKey, String secret) {
-		String authToken = md5(username + md5(password));
+		if (!isMD5(password))
+			password = md5(password);
+		String authToken = md5(username + password);
 		Map<String, String> params = map("api_key", apiKey, "username", username, "authToken", authToken);
 		String sig = createSignature("auth.getMobileSession", params, secret);
 		Result result = Caller.getInstance()
@@ -62,7 +66,12 @@ public class Authenticator {
 	 * @see Session
 	 */
 	public static Session getSession(String token, String apiKey, String secret) {
-		Result result = Caller.getInstance().call("auth.getSession", apiKey, "token", token);
+		String m = "auth.getSession";
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("api_key", apiKey);
+		params.put("token", token);
+		params.put("api_sig", createSignature(m, params, secret));
+		Result result = Caller.getInstance().call(m, apiKey, params);
 		return Session.sessionFromElement(result.getContentElement(), apiKey, secret);
 	}
 

@@ -9,7 +9,7 @@ public enum ImageSize {
 	MEDIUM,
 	LARGE,
 	HUGE,
+	EXTRALARGE,
 	ORIGINAL
-
 
 }

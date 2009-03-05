@@ -1,6 +1,10 @@
 package net.roarsoftware.lastfm;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import net.roarsoftware.xml.DomElement;
 
@@ -23,26 +27,7 @@ public class Group {
 	}
 
 	public static Chart<Album> getWeeklyAlbumChart(String group, String from, String to, int limit, String apiKey) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("group", group);
-		if (from != null && to != null) {
-			params.put("from", from);
-			params.put("to", to);
-		}
-		if (limit != -1) {
-			params.put("limit", String.valueOf(limit));
-		}
-		Result result = Caller.getInstance().call("group.getWeeklyAlbumChart", apiKey, params);
-		if (!result.isSuccessful())
-			return null;
-		DomElement element = result.getContentElement();
-		Collection<Album> albums = new ArrayList<Album>();
-		for (DomElement domElement : element.getChildren("album")) {
-			albums.add(Album.albumFromElement(domElement));
-		}
-		long fromTime = 1000 * Long.parseLong(element.getAttribute("from"));
-		long toTime = 1000 * Long.parseLong(element.getAttribute("to"));
-		return new Chart<Album>(new Date(fromTime), new Date(toTime), albums);
+		return Chart.getChart("group.getWeeklyAlbumChart", "group", group, "album", from, to, limit, apiKey);
 	}
 
 	public static Chart<Artist> getWeeklyArtistChart(String group, String apiKey) {
@@ -54,26 +39,7 @@ public class Group {
 	}
 
 	public static Chart<Artist> getWeeklyArtistChart(String group, String from, String to, int limit, String apiKey) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("group", group);
-		if (from != null && to != null) {
-			params.put("from", from);
-			params.put("to", to);
-		}
-		if (limit != -1) {
-			params.put("limit", String.valueOf(limit));
-		}
-		Result result = Caller.getInstance().call("group.getWeeklyArtistChart", apiKey, params);
-		if (!result.isSuccessful())
-			return null;
-		DomElement element = result.getContentElement();
-		Collection<Artist> artists = new ArrayList<Artist>();
-		for (DomElement domElement : element.getChildren("artist")) {
-			artists.add(Artist.artistFromElement(domElement));
-		}
-		long fromTime = 1000 * Long.parseLong(element.getAttribute("from"));
-		long toTime = 1000 * Long.parseLong(element.getAttribute("to"));
-		return new Chart<Artist>(new Date(fromTime), new Date(toTime), artists);
+		return Chart.getChart("group.getWeeklyArtistChart", "group", group, "artist", from, to, limit, apiKey);
 	}
 
 	public static Chart<Track> getWeeklyTrackChart(String group, String apiKey) {
@@ -85,51 +51,34 @@ public class Group {
 	}
 
 	public static Chart<Track> getWeeklyTrackChart(String group, String from, String to, int limit, String apiKey) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("group", group);
-		if (from != null && to != null) {
-			params.put("from", from);
-			params.put("to", to);
-		}
-		if (limit != -1) {
-			params.put("limit", String.valueOf(limit));
-		}
-		Result result = Caller.getInstance().call("group.getWeeklyTrackChart", apiKey, params);
-		if (!result.isSuccessful())
-			return null;
-		DomElement element = result.getContentElement();
-		Collection<Track> tracks = new ArrayList<Track>();
-		for (DomElement domElement : element.getChildren("track")) {
-			tracks.add(Track.trackFromElement(domElement));
-		}
-		long fromTime = 1000 * Long.parseLong(element.getAttribute("from"));
-		long toTime = 1000 * Long.parseLong(element.getAttribute("to"));
-		return new Chart<Track>(new Date(fromTime), new Date(toTime), tracks);
+		return Chart.getChart("group.getWeeklyTrackChart", "group", group, "track", from, to, limit, apiKey);
 	}
 
 	public static LinkedHashMap<String, String> getWeeklyChartList(String group, String apiKey) {
-		Result result = Caller.getInstance().call("group.getWeeklyChartList", apiKey, "group", group);
-		if (!result.isSuccessful())
-			return new LinkedHashMap<String, String>(0);
-		DomElement element = result.getContentElement();
-		LinkedHashMap<String, String> list = new LinkedHashMap<String, String>();
-		for (DomElement domElement : element.getChildren("chart")) {
-			list.put(domElement.getAttribute("from"), domElement.getAttribute("to"));
-		}
-		return list;
+		return Chart.getWeeklyChartList("group", group, apiKey);
 	}
 
 	public static Collection<Chart> getWeeklyChartListAsCharts(String group, String apiKey) {
-		Result result = Caller.getInstance().call("group.getWeeklyChartList", apiKey, "group", group);
+		return Chart.getWeeklyChartListAsCharts("group", group, apiKey);
+	}
+
+	public static PaginatedResult<User> getMembers(String group, String apiKey) {
+		return getMembers(group, 1, apiKey);
+	}
+
+	public static PaginatedResult<User> getMembers(String group, int page, String apiKey) {
+		Result result = Caller.getInstance()
+				.call("group.getMembers", apiKey, "group", group, "page", String.valueOf(page));
 		if (!result.isSuccessful())
-			return Collections.emptyList();
-		DomElement element = result.getContentElement();
-		List<Chart> list = new ArrayList<Chart>();
-		for (DomElement domElement : element.getChildren("chart")) {
-			long fromTime = 1000 * Long.parseLong(domElement.getAttribute("from"));
-			long toTime = 1000 * Long.parseLong(domElement.getAttribute("to"));
-			list.add(new Chart<Track>(new Date(fromTime), new Date(toTime), null));
+			return new PaginatedResult<User>(0, 0, Collections.<User>emptyList());
+		DomElement root = result.getContentElement();
+		Collection<DomElement> children = root.getChildren("user");
+		List<User> users = new ArrayList<User>(children.size());
+		for (DomElement child : children) {
+			users.add(User.userFromElement(child));
 		}
-		return list;
+		page = Integer.parseInt(root.getAttribute("page"));
+		int total = Integer.parseInt(root.getAttribute("totalPages"));
+		return new PaginatedResult<User>(page, total, users);
 	}
 }

@@ -1,7 +1,12 @@
 package net.roarsoftware.lastfm;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
 
 import net.roarsoftware.xml.DomElement;
 
@@ -14,6 +19,9 @@ import net.roarsoftware.xml.DomElement;
  */
 public abstract class MusicEntry extends ImageHolder {
 
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ",
+			Locale.ENGLISH);
+
 	protected String name;
 	protected String url;
 	protected String mbid;
@@ -22,6 +30,9 @@ public abstract class MusicEntry extends ImageHolder {
 	protected boolean streamable;
 
 	protected Collection<String> tags = new ArrayList<String>();
+	private Date wikiLastChanged;
+	private String wikiSummary;
+	private String wikiText;
 
 	protected MusicEntry(String name, String url) {
 		this(name, url, null, -1, -1, false);
@@ -87,17 +98,19 @@ public abstract class MusicEntry extends ImageHolder {
 		String playcountString;
 		String listenersString;
 		if (statsChild != null) {
-			playcountString = statsChild.getChildText("plays");
+			playcountString = statsChild.getChildText("playcount");
 			listenersString = statsChild.getChildText("listeners");
 		} else {
 			playcountString = element.getChildText("playcount");
 			listenersString = element.getChildText("listeners");
 		}
-		int playcount = playcountString == null ? -1 : Integer.parseInt(playcountString);
-		int listeners = listenersString == null ? -1 : Integer.parseInt(listenersString);
+		int playcount = playcountString == null || playcountString.length() == 0 ? -1 : Integer
+				.parseInt(playcountString);
+		int listeners = listenersString == null || listenersString.length() == 0 ? -1 : Integer
+				.parseInt(listenersString);
 		// streamable
 		String s = element.getChildText("streamable");
-		boolean streamable = s != null && Integer.parseInt(s) == 1;
+		boolean streamable = s != null && s.length() != 0 && Integer.parseInt(s) == 1;
 		// copy
 		entry.name = element.getChildText("name");
 		entry.url = element.getChildText("url");
@@ -107,12 +120,46 @@ public abstract class MusicEntry extends ImageHolder {
 		entry.streamable = streamable;
 		// tags
 		DomElement tags = element.getChild("tags");
+		if (tags == null)
+			tags = element.getChild("toptags");
 		if (tags != null) {
 			for (DomElement tage : tags.getChildren("tag")) {
 				entry.tags.add(tage.getChildText("name"));
 			}
 		}
+		// wiki
+		DomElement wiki = element.getChild("bio");
+		if (wiki == null)
+			wiki = element.getChild("wiki");
+		if (wiki != null) {
+			String publishedText = wiki.getChildText("published");
+			try {
+				entry.wikiLastChanged = DATE_FORMAT.parse(publishedText);
+			} catch (ParseException e) {
+				// try parsing it with current locale
+				try {
+					DateFormat clFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ", Locale.getDefault());
+					entry.wikiLastChanged = clFormat.parse(publishedText);
+				} catch (ParseException e2) {
+					// cannot parse date, wrong locale. wait for last.fm to fix.
+				}
+			}
+			entry.wikiSummary = wiki.getChildText("summary");
+			entry.wikiText = wiki.getChildText("content");
+		}
 		// images
 		ImageHolder.loadImages(entry, element);
+	}
+
+	public Date getWikiLastChanged() {
+		return wikiLastChanged;
+	}
+
+	public String getWikiSummary() {
+		return wikiSummary;
+	}
+
+	public String getWikiText() {
+		return wikiText;
 	}
 }

@@ -4,8 +4,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import net.roarsoftware.xml.DomElement;
@@ -26,7 +28,6 @@ public class Event extends ImageHolder {
 	private String headliner;
 
 	private Date startDate;
-	private Date startTime;
 
 	private String description;
 	private String url;
@@ -105,6 +106,20 @@ public class Event extends ImageHolder {
 				.call("event.attend", session, "event", eventId, "status", String.valueOf(status.getId()));
 	}
 
+	/**
+	 * Share an event with one or more Last.fm users or other friends.
+	 *
+	 * @param eventId An event ID
+	 * @param recipients A comma delimited list of email addresses or Last.fm usernames. Maximum is 10.
+	 * @param message An optional message to send with the recommendation.
+	 * @param session A Session instance
+	 * @return the Result of the operation
+	 */
+	public static Result share(String eventId, String recipients, String message, Session session) {
+		return Caller.getInstance()
+				.call("event.share", session, "event", eventId, "recipient", recipients, "message", message);
+	}
+
 	static Event eventFromElement(DomElement e) {
 		if (e == null)
 			return null;
@@ -120,8 +135,16 @@ public class Event extends ImageHolder {
 			event.reviews = Integer.parseInt(e.getChildText("reviews"));
 		try {
 			event.startDate = DATE_FORMAT.parse(e.getChildText("startDate"));
-			if (e.hasChild("startTime"))
-				event.startTime = TIME_FORMAT.parse(e.getChildText("startTime"));
+			if (e.hasChild("startTime")) {
+				Date startTime = TIME_FORMAT.parse(e.getChildText("startTime"));
+				Calendar c = GregorianCalendar.getInstance();
+				c.setTime(event.startDate);
+				Calendar timeCalendar = GregorianCalendar.getInstance();
+				timeCalendar.setTime(startTime);
+				c.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+				c.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
+				event.startDate = c.getTime();
+			}
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
@@ -130,79 +153,10 @@ public class Event extends ImageHolder {
 		for (DomElement element : e.getChild("artists").getChildren("artist")) {
 			event.artists.add(element.getText());
 		}
-		event.venue = venueFromElement(event, e.getChild("venue"));
+		event.venue = Venue.venueFromElement(e.getChild("venue"));
 		return event;
 	}
 
-
-	private static Venue venueFromElement(Event parent, DomElement e) {
-		Venue venue = parent.new Venue();
-		venue.name = e.getChildText("name");
-		venue.url = e.getChildText("url");
-		DomElement l = e.getChild("location");
-		venue.city = l.getChildText("city");
-		venue.country = l.getChildText("country");
-		venue.street = l.getChildText("street");
-		venue.postal = l.getChildText("postalcode");
-		venue.timezone = l.getChildText("timezone");
-		DomElement p = l.getChild("geo:point");
-		venue.latitude = Float.parseFloat(p.getChildText("geo:lat"));
-		venue.longitude = Float.parseFloat(p.getChildText("geo:long"));
-		return venue;
-	}
-
-	/**
-	 * Venue information bean.
-	 */
-	public class Venue {
-
-		private String name;
-		private String url;
-		private String city, country, street, postal;
-
-		private float latitude, longitude;
-		private String timezone;
-
-		private Venue() {
-		}
-
-		public String getUrl() {
-			return url;
-		}
-
-		public String getCity() {
-			return city;
-		}
-
-		public String getCountry() {
-			return country;
-		}
-
-		public float getLatitude() {
-			return latitude;
-		}
-
-		public float getLongitude() {
-			return longitude;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getPostal() {
-			return postal;
-		}
-
-		public String getStreet() {
-			return street;
-		}
-
-		public String getTimezone() {
-			return timezone;
-		}
-
-	}
 
 	/**
 	 * Enumeration for the attendance status parameter of the <code>attend</code> operation.

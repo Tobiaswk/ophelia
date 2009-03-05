@@ -2,7 +2,6 @@ package net.roarsoftware.lastfm;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +25,11 @@ public class Track extends MusicEntry {
 	protected String albumMbid;
 
 	protected boolean fullTrackAvailable;
+	protected boolean nowPlaying;
 
 	protected Date playedWhen;
 	protected int duration;
+	public String location;
 
 	protected Track(String name, String url, String artist) {
 		super(name, url);
@@ -36,16 +37,18 @@ public class Track extends MusicEntry {
 	}
 
 	protected Track(String name, String url, String mbid, int playcount, int listeners, boolean streamable,
-					String artist, String artistMbid, boolean fullTrackAvailable) {
+					String artist, String artistMbid, boolean fullTrackAvailable, boolean nowPlaying) {
 		super(name, url, mbid, playcount, listeners, streamable);
 		this.artist = artist;
 		this.artistMbid = artistMbid;
 		this.fullTrackAvailable = fullTrackAvailable;
+		this.nowPlaying = nowPlaying;
 	}
 
 	/**
 	 * Returns the duration of the song, if available, in seconds. The duration attribute is only available
-	 * for tracks retrieved by {@link Playlist#fetch(String, String) Playlist.fetch}.
+	 * for tracks retrieved by {@link Playlist#fetch(String, String) Playlist.fetch} and
+	 * {@link Track#getInfo(String, String, String) Track.getInfo}.
 	 *
 	 * @return duration in seconds
 	 */
@@ -71,6 +74,19 @@ public class Track extends MusicEntry {
 
 	public boolean isFullTrackAvailable() {
 		return fullTrackAvailable;
+	}
+
+	public boolean isNowPlaying() {
+		return nowPlaying;
+	}
+
+	/**
+	 * Returns the location (URL) of this Track. This information is only available with the {@link Radio} services.
+	 *
+	 * @return the location
+	 */
+	public String getLocation() {
+		return location;
 	}
 
 	/**
@@ -101,13 +117,13 @@ public class Track extends MusicEntry {
 	 * Pass <code>null</code> for the artist parameter if you want to specify a limit but don't want
 	 * to define an artist.
 	 *
-	 * @param track Track name
 	 * @param artist Artist's name or <code>null</code>
+	 * @param track Track name
 	 * @param limit Number of maximum results
 	 * @param apiKey The API key
 	 * @return a list of possible matches
 	 */
-	public static Collection<Track> search(String track, String artist, int limit, String apiKey) {
+	public static Collection<Track> search(String artist, String track, int limit, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("track", track);
 		params.put("limit", String.valueOf(limit));
@@ -125,14 +141,14 @@ public class Track extends MusicEntry {
 
 	/**
 	 * Retrieves the top tags for the given track. You either have to specify a track and artist name or
-	 * a mbid. If you specify an mbid you may pass <code>null</code> for the second parameter.
+	 * a mbid. If you specify an mbid you may pass <code>null</code> for the first parameter.
 	 *
-	 * @param trackOrMbid Track name or MBID
 	 * @param artist Artist name or <code>null</code> if an MBID is specified
+	 * @param trackOrMbid Track name or MBID
 	 * @param apiKey The API key
 	 * @return list of tags
 	 */
-	public static Collection<String> getTopTags(String trackOrMbid, String artist, String apiKey) {
+	public static List<Tag> getTopTags(String artist, String trackOrMbid, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (StringUtilities.isMbid(trackOrMbid)) {
 			params.put("mbid", trackOrMbid);
@@ -141,26 +157,24 @@ public class Track extends MusicEntry {
 			params.put("track", trackOrMbid);
 		}
 		Result result = Caller.getInstance().call("track.getTopTags", apiKey, params);
-		if (!result.isSuccessful())
-			return Collections.emptyList();
 		DomElement element = result.getContentElement();
-		List<String> tags = new ArrayList<String>();
+		List<Tag> tags = new ArrayList<Tag>();
 		for (DomElement domElement : element.getChildren("tag")) {
-			tags.add(domElement.getChildText("name"));
+			tags.add(Tag.tagFromElement(domElement));
 		}
 		return tags;
 	}
 
 	/**
 	 * Retrieves the top fans for the given track. You either have to specify a track and artist name or
-	 * a mbid. If you specify an mbid you may pass <code>null</code> for the second parameter.
+	 * a mbid. If you specify an mbid you may pass <code>null</code> for the first parameter.
 	 *
-	 * @param trackOrMbid Track name or MBID
 	 * @param artist Artist name or <code>null</code> if an MBID is specified
+	 * @param trackOrMbid Track name or MBID
 	 * @param apiKey The API key
 	 * @return list of fans
 	 */
-	public static Collection<User> getTopFans(String trackOrMbid, String artist, String apiKey) {
+	public static Collection<User> getTopFans(String artist, String trackOrMbid, String apiKey) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (StringUtilities.isMbid(trackOrMbid)) {
 			params.put("mbid", trackOrMbid);
@@ -169,8 +183,6 @@ public class Track extends MusicEntry {
 			params.put("track", trackOrMbid);
 		}
 		Result result = Caller.getInstance().call("track.getTopFans", apiKey, params);
-		if (!result.isSuccessful())
-			return Collections.emptyList();
 		DomElement element = result.getContentElement();
 		List<User> users = new ArrayList<User>();
 		for (DomElement domElement : element.getChildren("user")) {
@@ -269,8 +281,6 @@ public class Track extends MusicEntry {
 			params.put("mbid", mbid);
 		}
 		Result result = Caller.getInstance().call("track.getSimilar", apiKey, params);
-		if (!result.isSuccessful())
-			return Collections.emptyList();
 		List<Track> tracks = new ArrayList<Track>();
 		for (DomElement element : result.getContentElement().getChildren("track")) {
 			tracks.add(Track.trackFromElement(element));
@@ -288,8 +298,6 @@ public class Track extends MusicEntry {
 	 */
 	public static Collection<String> getTags(String artist, String track, Session session) {
 		Result result = Caller.getInstance().call("track.getTags", session, "artist", artist, "track", track);
-		if (!result.isSuccessful())
-			return Collections.emptyList();
 		DomElement element = result.getContentElement();
 		Collection<String> tags = new ArrayList<String>();
 		for (DomElement domElement : element.getChildren("tag")) {
@@ -298,9 +306,44 @@ public class Track extends MusicEntry {
 		return tags;
 	}
 
+	/**
+	 * Get the metadata for a track on Last.fm using the artist/track name or a musicbrainz id.
+	 *
+	 * @param artist The artist name in question or <code>null</code> if an mbid is specified
+	 * @param trackOrMbid The track name in question or the musicbrainz id for the track
+	 * @param apiKey A Last.fm API key.
+	 * @return Track information
+	 */
+	public static Track getInfo(String artist, String trackOrMbid, String apiKey) {
+		Map<String, String> params = new HashMap<String, String>();
+		if (StringUtilities.isMbid(trackOrMbid)) {
+			params.put("mbid", trackOrMbid);
+		} else {
+			params.put("artist", artist);
+			params.put("track", trackOrMbid);
+		}
+		Result result = Caller.getInstance().call("track.getInfo", apiKey, params);
+		if (!result.isSuccessful())
+			return null;
+		DomElement content = result.getContentElement();
+		DomElement album = content.getChild("album");
+		Track track = trackFromElement(content);
+		if (album != null) {
+			track.album = album.getChildText("title");
+			track.albumMbid = album.getChildText("mbid");
+			ImageHolder.loadImages(track, album);
+		}
+		return track;
+	}
+
 	static Track trackFromElement(DomElement element, String artistName) {
 		Track track = new Track(null, null, artistName);
 		MusicEntry.loadStandardInfo(track, element);
+		final String nowPlayingAttr = element.getAttribute("nowplaying");
+		if (nowPlayingAttr != null)
+			track.nowPlaying = Boolean.valueOf(nowPlayingAttr);
+		if (element.hasChild("duration"))
+			track.duration = Integer.parseInt(element.getChildText("duration")) / 1000;
 		DomElement album = element.getChild("album");
 		if (album != null) {
 			track.album = album.getText();

@@ -119,6 +119,24 @@ public class Album extends MusicEntry {
 		return tags;
 	}
 
+	/**
+	 * Search for an album by name. Returns album matches sorted by relevance.
+	 *
+	 * @param album The album name in question.
+	 * @param apiKey A Last.fm API key.
+	 * @return a Collection of matches
+	 */
+	public static Collection<Album> search(String album, String apiKey) {
+		Result result = Caller.getInstance().call("album.search", apiKey, "album", album);
+		DomElement matches = result.getContentElement().getChild("albummatches");
+		Collection<DomElement> children = matches.getChildren("album");
+		Collection<Album> albums = new ArrayList<Album>(children.size());
+		for (DomElement element : children) {
+			albums.add(albumFromElement(element));
+		}
+		return albums;
+	}
+
 	static Album albumFromElement(DomElement element) {
 		return albumFromElement(element, null);
 	}

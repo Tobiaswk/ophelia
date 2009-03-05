@@ -17,6 +17,39 @@ public class Session {
 	private String key;
 	private boolean subscriber;
 
+	/**
+	 * Restores a Session instance with the given session key.
+	 *
+	 * @param apiKey An api key
+	 * @param secret A secret
+	 * @param sessionKey The previously obtained session key
+	 * @return a Session instance
+	 */
+	public static Session createSession(String apiKey, String secret, String sessionKey) {
+		return createSession(apiKey, secret, sessionKey, null, false);
+	}
+
+	/**
+	 * Restores a Session instance with the given session key.
+	 *
+	 * @param apiKey An api key
+	 * @param secret A secret
+	 * @param sessionKey The previously obtained session key
+	 * @param username A Last.fm username
+	 * @param subscriber Subscriber status
+	 * @return a Session instance
+	 */
+	public static Session createSession(String apiKey, String secret, String sessionKey, String username,
+										boolean subscriber) {
+		Session s = new Session();
+		s.apiKey = apiKey;
+		s.secret = secret;
+		s.key = sessionKey;
+		s.username = username;
+		s.subscriber = subscriber;
+		return s;
+	}
+
 	public String getSecret() {
 		return secret;
 	}
@@ -38,12 +71,11 @@ public class Session {
 	}
 
 	static Session sessionFromElement(DomElement element, String apiKey, String secret) {
-		Session s = new Session();
-		s.username = element.getChildText("name");
-		s.key = element.getChildText("key");
-		s.subscriber = element.getChildText("subscriber").equals("1");
-		s.apiKey = apiKey;
-		s.secret = secret;
-		return s;
+		if (element == null)
+			return null;
+		String user = element.getChildText("name");
+		String key = element.getChildText("key");
+		boolean subsc = element.getChildText("subscriber").equals("1");
+		return createSession(apiKey, secret, key, user, subsc);
 	}
 }

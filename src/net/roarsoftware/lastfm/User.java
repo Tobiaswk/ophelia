@@ -1,6 +1,12 @@
 package net.roarsoftware.lastfm;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import net.roarsoftware.xml.DomElement;
 
@@ -14,6 +20,14 @@ public class User extends ImageHolder {
 	private String name;
 	private String url;
 
+	private String language;
+	private String country;
+	private int age;
+	private String gender;
+	private boolean subscriber;
+	private int numPlaylists;
+	private int playcount;
+
 	public User(String name, String url) {
 		this.name = name;
 		this.url = url;
@@ -25,6 +39,38 @@ public class User extends ImageHolder {
 
 	public String getUrl() {
 		return url;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public int getNumPlaylists() {
+		return numPlaylists;
+	}
+
+	public int getPlaycount() {
+		return playcount;
+	}
+
+	public boolean isSubscriber() {
+		return subscriber;
+	}
+
+	public String getImageURL() {
+		return getImageURL(ImageSize.MEDIUM);
 	}
 
 	public static Collection<User> getFriends(String user, String apiKey) {
@@ -159,26 +205,7 @@ public class User extends ImageHolder {
 	}
 
 	public static Chart<Album> getWeeklyAlbumChart(String user, String from, String to, int limit, String apiKey) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("user", user);
-		if (from != null && to != null) {
-			params.put("from", from);
-			params.put("to", to);
-		}
-		if (limit != -1) {
-			params.put("limit", String.valueOf(limit));
-		}
-		Result result = Caller.getInstance().call("user.getWeeklyAlbumChart", apiKey, params);
-		if (!result.isSuccessful())
-			return null;
-		DomElement element = result.getContentElement();
-		Collection<Album> albums = new ArrayList<Album>();
-		for (DomElement domElement : element.getChildren("album")) {
-			albums.add(Album.albumFromElement(domElement));
-		}
-		long fromTime = 1000 * Long.parseLong(element.getAttribute("from"));
-		long toTime = 1000 * Long.parseLong(element.getAttribute("to"));
-		return new Chart<Album>(new Date(fromTime), new Date(toTime), albums);
+		return Chart.getChart("user.getWeeklyAlbumChart", "user", user, "album", from, to, limit, apiKey);
 	}
 
 	public static Chart<Artist> getWeeklyArtistChart(String user, String apiKey) {
@@ -190,26 +217,7 @@ public class User extends ImageHolder {
 	}
 
 	public static Chart<Artist> getWeeklyArtistChart(String user, String from, String to, int limit, String apiKey) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("user", user);
-		if (from != null && to != null) {
-			params.put("from", from);
-			params.put("to", to);
-		}
-		if (limit != -1) {
-			params.put("limit", String.valueOf(limit));
-		}
-		Result result = Caller.getInstance().call("user.getWeeklyArtistChart", apiKey, params);
-		if (!result.isSuccessful())
-			return null;
-		DomElement element = result.getContentElement();
-		Collection<Artist> artists = new ArrayList<Artist>();
-		for (DomElement domElement : element.getChildren("artist")) {
-			artists.add(Artist.artistFromElement(domElement));
-		}
-		long fromTime = 1000 * Long.parseLong(element.getAttribute("from"));
-		long toTime = 1000 * Long.parseLong(element.getAttribute("to"));
-		return new Chart<Artist>(new Date(fromTime), new Date(toTime), artists);
+		return Chart.getChart("user.getWeeklyArtistChart", "user", user, "artist", from, to, limit, apiKey);
 	}
 
 	public static Chart<Track> getWeeklyTrackChart(String user, String apiKey) {
@@ -221,52 +229,15 @@ public class User extends ImageHolder {
 	}
 
 	public static Chart<Track> getWeeklyTrackChart(String user, String from, String to, int limit, String apiKey) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("user", user);
-		if (from != null && to != null) {
-			params.put("from", from);
-			params.put("to", to);
-		}
-		if (limit != -1) {
-			params.put("limit", String.valueOf(limit));
-		}
-		Result result = Caller.getInstance().call("user.getWeeklyTrackChart", apiKey, params);
-		if (!result.isSuccessful())
-			return null;
-		DomElement element = result.getContentElement();
-		Collection<Track> tracks = new ArrayList<Track>();
-		for (DomElement domElement : element.getChildren("track")) {
-			tracks.add(Track.trackFromElement(domElement));
-		}
-		long fromTime = 1000 * Long.parseLong(element.getAttribute("from"));
-		long toTime = 1000 * Long.parseLong(element.getAttribute("to"));
-		return new Chart<Track>(new Date(fromTime), new Date(toTime), tracks);
+		return Chart.getChart("user.getWeeklyTrackChart", "user", user, "track", from, to, limit, apiKey);
 	}
 
 	public static LinkedHashMap<String, String> getWeeklyChartList(String user, String apiKey) {
-		Result result = Caller.getInstance().call("user.getWeeklyChartList", apiKey, "user", user);
-		if (!result.isSuccessful())
-			return new LinkedHashMap<String, String>(0);
-		DomElement element = result.getContentElement();
-		LinkedHashMap<String, String> list = new LinkedHashMap<String, String>();
-		for (DomElement domElement : element.getChildren("chart")) {
-			list.put(domElement.getAttribute("from"), domElement.getAttribute("to"));
-		}
-		return list;
+		return Chart.getWeeklyChartList("user", user, apiKey);
 	}
 
 	public static Collection<Chart> getWeeklyChartListAsCharts(String user, String apiKey) {
-		Result result = Caller.getInstance().call("user.getWeeklyChartList", apiKey, "user", user);
-		if (!result.isSuccessful())
-			return Collections.emptyList();
-		DomElement element = result.getContentElement();
-		List<Chart> list = new ArrayList<Chart>();
-		for (DomElement domElement : element.getChildren("chart")) {
-			long fromTime = 1000 * Long.parseLong(domElement.getAttribute("from"));
-			long toTime = 1000 * Long.parseLong(domElement.getAttribute("to"));
-			list.add(new Chart<Track>(new Date(fromTime), new Date(toTime), null));
-		}
-		return list;
+		return Chart.getWeeklyChartListAsCharts("user", user, apiKey);
 	}
 
 	/**
@@ -323,6 +294,29 @@ public class User extends ImageHolder {
 		return new PaginatedResult<Event>(currentPage, totalPages, events);
 	}
 
+	public static PaginatedResult<Event> getRecommendedEvents(Session session) {
+		return getRecommendedEvents(0, session);
+	}
+
+	public static PaginatedResult<Event> getRecommendedEvents(int page, Session session) {
+		return getRecommendedEvents(0, 0, session);
+	}
+
+	public static PaginatedResult<Event> getRecommendedEvents(int page, int limit, Session session) {
+		Result result = Caller.getInstance().call("user.getRecommendedEvents", session, "page", String.valueOf(page),
+				"limit", String.valueOf(limit), "user", session.getUsername());
+		if (!result.isSuccessful())
+			return new PaginatedResult<Event>(0, 0, Collections.<Event>emptyList());
+		DomElement element = result.getContentElement();
+		List<Event> events = new ArrayList<Event>();
+		for (DomElement domElement : element.getChildren("event")) {
+			events.add(Event.eventFromElement(domElement));
+		}
+		int currentPage = Integer.valueOf(element.getAttribute("page"));
+		int totalPages = Integer.valueOf(element.getAttribute("totalPages"));
+		return new PaginatedResult<Event>(currentPage, totalPages, events);
+	}
+
 	/**
 	 * Gets a list of a user's playlists on Last.fm. Note that this method only fetches metadata regarding the user's
 	 * playlists. If you want to retrieve the list of tracks in a playlist use
@@ -362,9 +356,65 @@ public class User extends ImageHolder {
 		return tracks;
 	}
 
+	/**
+	 * Retrieves profile information about the current authenticated user.
+	 *
+	 * @param session A Session instance
+	 * @return User info
+	 */
+	public static User getInfo(Session session) {
+		Result result = Caller.getInstance().call("user.getInfo", session);
+		if (!result.isSuccessful())
+			return null;
+		DomElement element = result.getContentElement();
+		return userFromElement(element);
+	}
+
+	/**
+	 * Get Last.fm artist recommendations for a user.
+	 *
+	 * @param session A Session instance
+	 * @return a list of {@link Artist}s
+	 */
+	public static PaginatedResult<Artist> getRecommendedArtists(Session session) {
+		return getRecommendedArtists(1, session);
+	}
+
+	/**
+	 * Get Last.fm artist recommendations for a user.
+	 *
+	 * @param page The page to fetch
+	 * @param session A Session instance
+	 * @return a list of {@link Artist}s
+	 */
+	public static PaginatedResult<Artist> getRecommendedArtists(int page, Session session) {
+		Result result = Caller.getInstance().call("user.getRecommendedArtists", session, "page", String.valueOf(page));
+		if (!result.isSuccessful())
+			return new PaginatedResult<Artist>(0, 0, Collections.<Artist>emptyList());
+		DomElement element = result.getContentElement();
+		Collection<DomElement> children = element.getChildren("artist");
+		List<Artist> artists = new ArrayList<Artist>(children.size());
+		for (DomElement domElement : children) {
+			artists.add(Artist.artistFromElement(domElement));
+		}
+		page = Integer.parseInt(element.getAttribute("page"));
+		int total = Integer.parseInt(element.getAttribute("totalPages"));
+		return new PaginatedResult<Artist>(page, total, artists);
+	}
+
 	static User userFromElement(DomElement element) {
 		User user = new User(element.getChildText("name"), element.getChildText("url"));
 		ImageHolder.loadImages(user, element);
+		if (element.hasChild("lang")) { // extended user information
+			user.language = element.getChildText("lang");
+			user.country = element.getChildText("country");
+			if (element.hasChild("age"))
+				user.age = Integer.parseInt(element.getChildText("age"));
+			user.gender = element.getChildText("gender");
+			user.subscriber = "1".equals(element.getChildText("subscriber"));
+			user.playcount = Integer.parseInt(element.getChildText("playcount"));
+			user.numPlaylists = Integer.parseInt(element.getChildText("playlists"));
+		}
 		return user;
 	}
 }

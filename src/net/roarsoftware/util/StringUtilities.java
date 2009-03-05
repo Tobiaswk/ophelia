@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Utilitiy class with methods to calculate an md5 hash and to encode URLs.
@@ -16,7 +17,10 @@ import java.util.Map;
 public class StringUtilities {
 
 	private static MessageDigest digest;
-	private static String MBID_REGEX = "\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}";
+	private static Pattern MBID_PATTERN = Pattern
+			.compile("^[0-9a-f]{8}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{4}\\-[0-9a-f]{12}$",
+					Pattern.CASE_INSENSITIVE);
+	private static final Pattern MD5_PATTERN = Pattern.compile("[a-zA-Z0-9]{32}");
 
 	static {
 		try {
@@ -63,7 +67,7 @@ public class StringUtilities {
 
 	public static boolean isMbid(String artistOrMbid) {
 		// example: bfcc6d75-a6a5-4bc6-8282-47aec8531818
-		return artistOrMbid.length() == 36 && artistOrMbid.matches(MBID_REGEX);
+		return artistOrMbid.length() == 36 && MBID_PATTERN.matcher(artistOrMbid).matches();
 	}
 
 	/**
@@ -80,5 +84,27 @@ public class StringUtilities {
 			mp.put(strings[i], strings[i + 1]);
 		}
 		return mp;
+	}
+
+	/**
+	 * Strips all characters from a String, that might be invalid to be used in file names.
+	 * By default <tt>: / \ < > | ? " *</tt> are all replaced by <tt>-</tt>.
+	 * Note that this is no guarantee that the returned name will be definately valid.
+	 *
+	 * @param s the String to clean up
+	 * @return the cleaned up String
+	 */
+	public static String cleanUp(String s) {
+		return s.replaceAll("[*:/\\\\?|<>\"]", "-");
+	}
+
+	/**
+	 * Tests if the given string might already be a 32-char md5 string.
+	 *
+	 * @param s String to test
+	 * @return <code>true</code> if the given String might be a md5 string
+	 */
+	public static boolean isMD5(String s) {
+		return s.length() == 32 && MD5_PATTERN.matcher(s).matches();
 	}
 }

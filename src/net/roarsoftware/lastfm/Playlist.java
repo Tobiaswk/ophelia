@@ -116,6 +116,22 @@ public class Playlist {
 						track);
 	}
 
+	/**
+	 * Creates a Last.fm playlist.
+	 *
+	 * @param title A title for the playlist
+	 * @param description A description for the playlist
+	 * @param session A Session instance
+	 * @return the result of the operation
+	 */
+	public static Playlist create(String title, String description, Session session) {
+		Result result = Caller.getInstance()
+				.call("Playlist.create", session, "title", title, "description", description);
+		if (!result.isSuccessful())
+			return null;
+		return playlistFromElement(result.getContentElement().getChild("playlist"));
+	}
+
 	static Playlist playlistFromElement(DomElement e) {
 		if (e == null)
 			return null;
@@ -135,6 +151,7 @@ public class Playlist {
 				t.album = te.getChildText("album");
 				t.duration = Integer.parseInt(te.getChildText("duration")) / 1000;
 				t.imageUrls.put(ImageSize.LARGE, te.getChildText("image"));
+				t.location = te.getChildText("location");
 				p.tracks.add(t);
 			}
 			if (p.size == 0)

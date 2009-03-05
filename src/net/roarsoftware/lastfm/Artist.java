@@ -1,12 +1,9 @@
 package net.roarsoftware.lastfm;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -23,14 +20,8 @@ import net.roarsoftware.xml.DomElement;
  */
 public class Artist extends MusicEntry {
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ",
-			Locale.ENGLISH);
-
 	private Collection<Artist> similar = new ArrayList<Artist>();
 
-	private Date bioPublished;
-	private String bioSummary;
-	private String fullBio;
 	private float similarityMatch;
 
 	protected Artist(String name, String url) {
@@ -39,18 +30,6 @@ public class Artist extends MusicEntry {
 
 	protected Artist(String name, String url, String mbid, int playcount, int listeners, boolean streamable) {
 		super(name, url, mbid, playcount, listeners, streamable);
-	}
-
-	public Date getBioPublished() {
-		return bioPublished;
-	}
-
-	public String getBioSummary() {
-		return bioSummary;
-	}
-
-	public String getFullBio() {
-		return fullBio;
 	}
 
 	public float getSimilarityMatch() {
@@ -78,11 +57,26 @@ public class Artist extends MusicEntry {
 	 * @return detailed artist info
 	 */
 	public static Artist getInfo(String artistOrMbid, String apiKey) {
-		Map<String, String> params;
+		return getInfo(artistOrMbid, Locale.getDefault(), apiKey);
+	}
+
+	/**
+	 * Retrieves detailed artist info for the given artist or mbid entry.
+	 *
+	 * @param artistOrMbid Name of the artist or an mbid
+	 * @param locale The language to fetch info in
+	 * @param apiKey The API key
+	 * @return detailed artist info
+	 */
+	public static Artist getInfo(String artistOrMbid, Locale locale, String apiKey) {
+		Map<String, String> params = new HashMap<String, String>();
 		if (StringUtilities.isMbid(artistOrMbid)) {
-			params = Collections.singletonMap("mbid", artistOrMbid);
+			params.put("mbid", artistOrMbid);
 		} else {
-			params = Collections.singletonMap("artist", artistOrMbid);
+			params.put("artist", artistOrMbid);
+		}
+		if (locale != null && locale.getLanguage().length() != 0) {
+			params.put("lang", locale.getLanguage());
 		}
 		Result result = Caller.getInstance().call("artist.getInfo", apiKey, params);
 		if (!result.isSuccessful())
@@ -245,6 +239,20 @@ public class Artist extends MusicEntry {
 	}
 
 	/**
+	 * Share an artist with one or more Last.fm users or other friends.
+	 *
+	 * @param artist The artist to share.
+	 * @param recipients A comma delimited list of email addresses or Last.fm usernames. Maximum is 10.
+	 * @param message An optional message to send with the recommendation.
+	 * @param session A Session instance
+	 * @return the Result of the operation
+	 */
+	public static Result share(String artist, String recipients, String message, Session session) {
+		return Caller.getInstance()
+				.call("artist.share", session, "artist", artist, "recipient", recipients, "message", message);
+	}
+
+	/**
 	 * Get the tags applied by an individual user to an artist on Last.fm.
 	 *
 	 * @param artist The artist name in question
@@ -261,6 +269,25 @@ public class Artist extends MusicEntry {
 			tags.add(domElement.getChildText("name"));
 		}
 		return tags;
+	}
+
+	/**
+	 * Returns a list of upcoming events for an artist.
+	 *
+	 * @param artist The artist name in question
+	 * @param apiKey A Last.fm API key.
+	 * @return a list of events
+	 */
+	public static Collection<Event> getEvents(String artist, String apiKey) {
+		Result result = Caller.getInstance().call("artist.getEvents", apiKey, "artist", artist);
+		if (!result.isSuccessful())
+			return Collections.emptyList();
+		DomElement element = result.getContentElement();
+		Collection<Event> events = new ArrayList<Event>();
+		for (DomElement domElement : element.getChildren("event")) {
+			events.add(Event.eventFromElement(domElement));
+		}
+		return events;
 	}
 
 	/**
@@ -283,18 +310,6 @@ public class Artist extends MusicEntry {
 			for (DomElement child : children) {
 				artist.similar.add(artistFromElement(child));
 			}
-		}
-		// bio
-		DomElement bio = element.getChild("bio");
-		if (bio != null) {
-			String publishedText = bio.getChildText("published");
-			try {
-				artist.bioPublished = DATE_FORMAT.parse(publishedText);
-			} catch (ParseException e) {
-				// not our fault I hope :]
-			}
-			artist.bioSummary = bio.getChildText("summary");
-			artist.fullBio = bio.getChildText("content");
 		}
 		return artist;
 	}

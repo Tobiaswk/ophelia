@@ -2,6 +2,7 @@ package net.roarsoftware.lastfm;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import net.roarsoftware.xml.DomElement;
@@ -33,7 +34,7 @@ public abstract class ImageHolder {
 			if (attribute == null)
 				size = ImageSize.MEDIUM; // workaround for image responses without size attr.
 			else
-				size = ImageSize.valueOf(attribute.toUpperCase());
+				size = ImageSize.valueOf(attribute.toUpperCase(Locale.ENGLISH));
 			holder.imageUrls.put(size, image.getText());
 		}
 	}

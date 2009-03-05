@@ -9,12 +9,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 
 import net.roarsoftware.lastfm.Caller;
 import net.roarsoftware.lastfm.Session;
+import static net.roarsoftware.util.StringUtilities.encode;
 import static net.roarsoftware.util.StringUtilities.md5;
 
 /**
@@ -101,15 +101,7 @@ public class Scrobbler {
 	 * @throws IOException on I/O errors
 	 */
 	private ResponseStatus performHandshake(String url) throws IOException {
-		Proxy proxy = Caller.getInstance().getProxy();
-		URL u = new URL(url);
-		HttpURLConnection connection;
-		if (proxy != null) {
-			connection = (HttpURLConnection) u.openConnection(proxy);
-		} else {
-			connection = (HttpURLConnection) u.openConnection();
-		}
-		connection.setRequestProperty("User-Agent", Caller.getInstance().getUserAgent());
+		HttpURLConnection connection = Caller.getInstance().openConnection(url);
 		InputStream is = connection.getInputStream();
 		BufferedReader r = new BufferedReader(new InputStreamReader(is));
 		String status = r.readLine();
@@ -156,22 +148,16 @@ public class Scrobbler {
 			IOException {
 		if (sessionId == null)
 			throw new IllegalStateException("Perform successful handshake first.");
-		String b = album != null ? album : "";
+		String b = album != null ? encode(album) : "";
 		String l = length == -1 ? "" : String.valueOf(length);
 		String n = tracknumber == -1 ? "" : String.valueOf(tracknumber);
-		String body = String.format("s=%s&a=%s&t=%s&b=%s&l=%s&n=%s&m=", sessionId, artist, track, b, l, n);
+		String body = String
+				.format("s=%s&a=%s&t=%s&b=%s&l=%s&n=%s&m=", sessionId, encode(artist), encode(track), b, l, n);
 		if (Caller.getInstance().isDebugMode())
-			System.out.println("now playling: " + body);
+			System.out.println("now playing: " + body);
 		Proxy proxy = Caller.getInstance().getProxy();
-		URL u = new URL(nowPlayingUrl);
-		HttpURLConnection urlConnection;
-		if (proxy != null) {
-			urlConnection = (HttpURLConnection) u.openConnection(proxy);
-		} else {
-			urlConnection = (HttpURLConnection) u.openConnection();
-		}
+		HttpURLConnection urlConnection = Caller.getInstance().openConnection(nowPlayingUrl);
 		urlConnection.setRequestMethod("POST");
-		urlConnection.setRequestProperty("User-Agent", Caller.getInstance().getUserAgent());
 		urlConnection.setDoOutput(true);
 		OutputStream outputStream = urlConnection.getOutputStream();
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
@@ -221,6 +207,7 @@ public class Scrobbler {
 	 * @param data A list of song infos
 	 * @return the status of the operation
 	 * @throws IOException on I/O errors
+	 * @throws IllegalArgumentException if data contains more than 50 entries
 	 */
 	public ResponseStatus submit(Collection<SubmissionData> data) throws IOException {
 		if (sessionId == null)
@@ -237,16 +224,8 @@ public class Scrobbler {
 		String body = builder.toString();
 		if (Caller.getInstance().isDebugMode())
 			System.out.println("submit: " + body);
-		Proxy proxy = Caller.getInstance().getProxy();
-		URL u = new URL(submissionUrl);
-		HttpURLConnection urlConnection;
-		if (proxy != null) {
-			urlConnection = (HttpURLConnection) u.openConnection(proxy);
-		} else {
-			urlConnection = (HttpURLConnection) u.openConnection();
-		}
+		HttpURLConnection urlConnection = Caller.getInstance().openConnection(submissionUrl);
 		urlConnection.setRequestMethod("POST");
-		urlConnection.setRequestProperty("User-Agent", Caller.getInstance().getUserAgent());
 		urlConnection.setDoOutput(true);
 		OutputStream outputStream = urlConnection.getOutputStream();
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
