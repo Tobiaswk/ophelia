@@ -30,7 +30,7 @@ import javazoom.jl.decoder.Decoder;
 import javazoom.jl.decoder.Header;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.decoder.SampleBuffer;
-import ophelia.main.TrackWithID3;
+import ophelia.main.TrackMP3;
 
 /**
  * The <code>Player</code> class implements a simple player for playback
@@ -70,7 +70,7 @@ public class Player {
     private int lastPosition = 0;
     private boolean playing = true;
     private boolean stop = false;
-    private TrackWithID3 playingFile;
+    private TrackMP3 playingFile;
 
     /**
      * Creates a new <code>Player</code> instance with playingFile pointer. 
@@ -78,7 +78,7 @@ public class Player {
     public Player(File file) throws JavaLayerException, FileNotFoundException {
         this(new FileInputStream(file), null);
         try {
-            playingFile = new TrackWithID3(file.getAbsolutePath());
+            playingFile = new TrackMP3(file.getAbsolutePath());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -258,7 +258,7 @@ public class Player {
         return playing;
     }
 
-    public TrackWithID3 getPlayingFile() {
+    public TrackMP3 getPlayingFile() {
         return playingFile;
     }
 }

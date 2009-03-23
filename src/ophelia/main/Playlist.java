@@ -28,8 +28,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Observable;
+import java.util.List;
 import java.util.Vector;
+import ophelia.main.interfaces.StandardTrack;
 
 /**
  *
@@ -37,82 +41,141 @@ import java.util.Vector;
  */
 public class Playlist extends Observable {
 
-    private Vector<TrackWithID3> trackPlaylist;
-    private Vector<TrackWithID3> resultsPlaylist;
-    private boolean indexing;
+    private final String PLAYLISTDIR = "playlists";
+    private int trackNumbersMP3,  trackNumbersFLAC;
+
+    /* save/load playlist format identifier */
+    public enum PlaylistType {
+
+        M3U, Cleartext;
+    }
+
+    /* we store playlist in a hashmap, each playlist is stored in the-
+     * hasmap with key as the playlist name and a List with-
+     *  the playlist tracks */
+    private HashMap<String, List<StandardTrack>> trackPlaylists;
+    private List<StandardTrack> resultsPlaylist;
+    private int indexing;
+    private int trackNumber;
 
     public Playlist() {
-        this.resultsPlaylist = new Vector<TrackWithID3>();
-        this.trackPlaylist = new Vector<TrackWithID3>();
-        if (Settings.getInstance().isLoadPlaylistStartup()) {
-            loadPlaylistFile();
+        this.trackPlaylists = new HashMap<String, List<StandardTrack>>();
+        this.resultsPlaylist = Collections.synchronizedList(new Vector<StandardTrack>());
+        if (Settings.getInstance().isLoadPlaylistsStartup()) {
+            loadPlaylists();
         }
     }
 
-    public void addTracks(File[] files) {
+    public void addTracks(String playlistName, File[] files) {
         /* we start a new thread... in case of very big array */
-        indexing = true;
-        new Thread(new TrackIndexing(files)).start();
+        indexing++;
+        new Thread(new TrackIndexing(playlistName, files)).start();
     }
 
-    public Vector getTracks() {
-        return trackPlaylist;
+    public List getTracks(String playlistName) {
+        return trackPlaylists.get(playlistName);
     }
 
     public int getTrackCount() {
-        return trackPlaylist.size();
+        return trackNumber;
     }
 
     public int getMP3TrackCount() {
-        return getTrackTypeCount(".mp3");
+        return trackNumbersMP3;
     }
 
     public int getFLACTrackCount() {
-        return getTrackTypeCount(".flac");
+        return trackNumbersFLAC;
     }
 
-    private int getTrackTypeCount(String endsWith) {
-        int count = 0;
-        for (TrackWithID3 file : trackPlaylist) {
-            if (file.getAbsoluteFile().getName().endsWith(endsWith)) {
-                count++;
+    private synchronized int getTrackTypeCount(String endsWith) {
+        int typeCount = 0;
+        trackNumber = 0;
+        for (List<StandardTrack> playlist : trackPlaylists.values()) {
+            for (StandardTrack file : playlist) {
+                if (file.getAbsoluteFile().getName().endsWith(endsWith)) {
+                    typeCount++;
+                }
+                trackNumber++;
             }
         }
-        return count;
+        return typeCount;
+    }
+
+    public String[] getPlaylistNames() {
+        File[] playlists = new File(PLAYLISTDIR).listFiles();
+        String[] result = new String[playlists.length];
+        if (playlists != null && playlists.length != 0) {
+            result = new String[playlists.length];
+            for (int i = 0; i < playlists.length; i++) {
+                result[i] = playlists[i].getAbsolutePath();
+            }
+        }
+        for (String str : result) {
+            System.out.println(str + " blev indekseret.");
+        }
+        return result;
     }
 
     public boolean isIndexing() {
-        return indexing;
+        return indexing != 0;
     }
 
-    public void clearPlaylist() {
-        trackPlaylist.clear();
+    public void clearPlaylists() {
+        trackPlaylists.clear();
     }
 
-    public void searchTracks(String keyword) {
-        indexing = true;
-        new Thread(new TrackIndexing(keyword, "search")).start();
+    public void clearPlaylist(String playlistName) {
+        trackPlaylists.remove(playlistName);
     }
 
-    private void loadPlaylistFile() {
-        loadPlaylistFile(Settings.getInstance().getDefaultPlaylistName());
+    public void searchTracks(String playlistName, String keyword) {
+        indexing++;
+        new Thread(new TrackIndexing(new String[]{playlistName, keyword}, Job.SEARCHING)).start();
     }
 
-    public void loadPlaylistFile(String playlistFilename) {
-        indexing = true;
-        new Thread(new TrackIndexing(playlistFilename, "indexing")).start();
+    public void loadPlaylists(String... playlistNames) {
+        if (playlistNames.length == 0) {
+            playlistNames = getPlaylistNames();
+        }
+        for (String playlistName : playlistNames) {
+            if (trackPlaylists.containsKey(parsePlaylistName(playlistName))) {
+                trackPlaylists.get(parsePlaylistName(playlistName)).clear();
+            }
+            indexing++;
+            new Thread(new TrackIndexing(new String[]{playlistName}, Job.INDEXING)).start();
+        }
+    }
+
+    public void savePlaylists() {
+        savePlaylists(trackPlaylists.keySet().toArray(new String[0]));
+    }
+
+    public void savePlaylists(String... playlistNames) {
+        for (String playlist : playlistNames) {
+            savePlaylistFile(playlist);
+        }
     }
 
     public void savePlaylistFile(String playlistName) {
         try {
-            PrintWriter out = new PrintWriter(new File(playlistName));
-            for (TrackWithID3 file : trackPlaylist) {
+            new File(PLAYLISTDIR).mkdir();
+            PrintWriter out = new PrintWriter(new File(PLAYLISTDIR + "/" + playlistName));
+            for (StandardTrack file : trackPlaylists.get(playlistName)) {
                 out.println(file.getAbsoluteFile().getAbsolutePath());
             }
             out.close();
         } catch (FileNotFoundException ex) {
-            //TODO
+            ex.printStackTrace();
         }
+    }
+
+    /* parse the playlist name from a string containing the full-
+     * playlist location path
+     * this is a temporary fix - needs a cleaner solution */
+    private String parsePlaylistName(String playlistLocation) {
+        String[] playlistFileName = playlistLocation.split("\\\\");
+        return playlistFileName[playlistFileName.length - 1];
     }
 
     /**
@@ -128,36 +191,42 @@ public class Playlist extends Observable {
     private class TrackIndexing implements Runnable {
 
         private File[] files;
-        private String filename;
-        private String job;
+        /* this String-array contains the-
+         * following arguments (depends on indexing situation):
+         * index 0 is the playlists name
+         * index 1 is search keyword */
+        private String[] args = new String[2];
+        private Job job;
 
         /**
          * this constructor is used when indexing newly added tracks
-         * @param array of File
+         * @param Array of Files
          */
-        public TrackIndexing(File[] files) {
+        public TrackIndexing(String playlistName, File[] files) {
+            this.args[0] = playlistName;
             this.files = files;
         }
 
         /**
          * this constructor is used when indexing or searching
-         * @param arg either playlistfilename or a seach keyword
-         * @param jobType "indexing" or "search"
+         * @param Array of arguments, etc. [playlistName, searchKeyword]
+         * @param Job INDEXING, SEARCHING, NEWFILES
          */
-        public TrackIndexing(String arg, String job) {
-            this.filename = arg;
+        public TrackIndexing(String[] args, Job job) {
+            this.args = args;
             this.job = job;
         }
 
-        public Vector<TrackWithID3> searchTracks(String keyword) {
+        public synchronized SinglePlaylist searchTracks(String playlistName, String keyword) {
             if (keyword.equals("")) {
-                return trackPlaylist;
+                /* return the playlist if no search keyword */
+                return new SinglePlaylist(playlistName, trackPlaylists.get(playlistName));
             }
             resultsPlaylist.clear();
             String title;
-            for (TrackWithID3 track : trackPlaylist) {
+            for (StandardTrack track : trackPlaylists.get(playlistName)) {
                 try {
-                    title = track.getTitle() + track.getArtist();
+                    title = track.toString();
                 } catch (Exception ex) {
                     title = track.getAbsoluteFile().getName();
                 }
@@ -165,56 +234,69 @@ public class Playlist extends Observable {
                     resultsPlaylist.add(track);
                 }
             }
-            return resultsPlaylist;
+            return new SinglePlaylist(playlistName, resultsPlaylist);
         }
 
-        public Vector<TrackWithID3> addTracks(File[] files) {
+        public SinglePlaylist addTracks(String playlistName, File[] files) {
             try {
                 for (File file : files) {
                     if (file.isDirectory()) {
-                        addTracks(file.listFiles(new SupportedFormatsFilter()));
+                        addTracks(playlistName, file.listFiles(new SupportedFormatsFilter()));
                     } else {
-                        TrackWithID3 track = new TrackWithID3(file.getAbsolutePath());
-                        if (!trackPlaylist.contains(track)) {
-                            trackPlaylist.add(track);
-                        }
+                        trackPlaylists.get(playlistName).add(new TrackMP3(file.getAbsolutePath()));
                     }
                 }
+                // done here to save some resources; only count tracks added
+                trackNumbersMP3 = getTrackTypeCount(".mp3");
+                trackNumbersFLAC = getTrackTypeCount(".flac");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            return trackPlaylist;
+            return new SinglePlaylist(playlistName, trackPlaylists.get(playlistName));
         }
 
-        public Vector<TrackWithID3> addTracks(String playlistFilename) {
+        public SinglePlaylist addTracks(String playlistLocation) {
             ArrayList<File> result = new ArrayList<File>();
             try {
                 BufferedReader in_test;
                 try {
-                    in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistFilename)));
+                    in_test = new BufferedReader(new InputStreamReader(new FileInputStream(playlistLocation)));
                     while (in_test.ready()) {
                         result.add(new File(in_test.readLine()));
                     }
                     in_test.close();
-                    addTracks(result.toArray(new File[0]));
-                } catch (FileNotFoundException e) {
-                    //nothing needs to be done
+                    addTracks(parsePlaylistName(playlistLocation), result.toArray(new File[0]));
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            return trackPlaylist;
+            return new SinglePlaylist(parsePlaylistName(playlistLocation), trackPlaylists.get(parsePlaylistName(playlistLocation)));
         }
 
         public void run() {
-            if (files != null) {
-                signalChange(addTracks(files));
-            } else if (job.equals("indexing")) {
-                signalChange(addTracks(filename));
-            } else if (job.equals("search")) {
-                signalChange(searchTracks(filename));
+            /* we ensure that the playlist List exists, if not, we create it */
+            if (trackPlaylists.get(parsePlaylistName(args[0])) == null) {
+                trackPlaylists.put(parsePlaylistName(args[0]), new Vector<StandardTrack>());
             }
-            indexing = false;
+            /* We signal change to the observer(s) and send an HashMap-
+             * back. This HashMap contains have playlist name as key-
+             * and the actual playlist as the data in the HashMap-
+             * this way the observer will know what playlist changed and-
+             * have the new playlist data as well */
+            if (files != null) {
+                /* add files to existing playlist */
+                signalChange(addTracks(args[0], files));
+            } else if (job.ordinal() == Job.INDEXING.ordinal()) {
+                /* load playlists */
+                signalChange(addTracks(args[0]));
+            } else if (job.ordinal() == Job.SEARCHING.ordinal()) {
+                /* search a playlist */
+                signalChange(searchTracks(args[0], args[1]));
+            }
+            indexing--;
+            System.out.println(indexing);
         }
     }
 }

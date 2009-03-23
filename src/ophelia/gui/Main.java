@@ -35,8 +35,12 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import net.roarsoftware.lastfm.scrobble.Scrobbler;
@@ -45,7 +49,8 @@ import ophelia.main.Playlist;
 import ophelia.main.PlaylistController;
 import ophelia.main.ScrobbleStatus;
 import ophelia.main.Settings;
-import ophelia.main.TrackWithID3;
+import ophelia.main.SinglePlaylist;
+import ophelia.main.interfaces.StandardTrack;
 
 /**
  *
@@ -85,13 +90,12 @@ public class Main extends javax.swing.JFrame implements Observer {
         jDialog_playlistchoose.setIconImage(ophelia_icon);
         jDialog_musicchoose.setSize(520, 300);
         jDialog_playlistchoose.setSize(520, 300);
+        jDialog_newPlaylist.setSize(300, 150);
         jFrame_about.setSize(430, 400);
-        jFrame_settings.setSize(380, 260);
+        jFrame_settings.setSize(450, 250);
         /* observer-pattern; we setup what we want to observe */
         plController.getPlaylist().addObserver(this);
         ScrobbleStatus.getInstance().addObserver(this);
-        /* intial load animation of playlist on startup */
-        new Thread(new GUIAnimation(1)).start();
     }
 
     /** This method is called from within the constructor to
@@ -128,17 +132,19 @@ public class Main extends javax.swing.JFrame implements Observer {
         jPanel3 = new javax.swing.JPanel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        jTextField_playlistName = new javax.swing.JTextField();
-        jCheckBox_loadPlaylistStartup = new javax.swing.JCheckBox();
         jButton2 = new javax.swing.JButton();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jCheckBox_loadPlaylistStartup = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
+        jButton3 = new javax.swing.JButton();
+        jPanel8 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jTextField_windowTitle = new javax.swing.JTextField();
         jCheckBox_trackInWindow = new javax.swing.JCheckBox();
+        jPanel9 = new javax.swing.JPanel();
         jCheckBox_trayIcon = new javax.swing.JCheckBox();
         jCheckBox_trayClose = new javax.swing.JCheckBox();
-        jButton3 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -149,8 +155,10 @@ public class Main extends javax.swing.JFrame implements Observer {
         jCheckBox_lastfmScrobble = new javax.swing.JCheckBox();
         jDialog_playlistchoose = new javax.swing.JDialog();
         jFileChooser_playlistfile = new javax.swing.JFileChooser();
-        jButton1 = new javax.swing.JButton();
-        jScrollPane6 = new javax.swing.JScrollPane();
+        jDialog_newPlaylist = new javax.swing.JDialog();
+        jTextField_newPlaylistName = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        jButton_makeNewPlaylist = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton_addDirectory = new javax.swing.JButton();
@@ -158,11 +166,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jLabel2 = new javax.swing.JLabel();
         jProgressBar1 = new javax.swing.JProgressBar();
         jLabel3 = new javax.swing.JLabel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jList_playlist1 = new javax.swing.JList();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jList_playlist2 = new javax.swing.JList();
+        jTabbedPane_playlists = new javax.swing.JTabbedPane();
         jButton_play = new javax.swing.JButton();
         jButton_stop = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
@@ -176,10 +180,12 @@ public class Main extends javax.swing.JFrame implements Observer {
         jMenu_addFiles = new javax.swing.JMenu();
         jMenuItem_addFiles = new javax.swing.JMenuItem();
         jMenuItem_addDirectory = new javax.swing.JMenuItem();
+        jMenuItem_newPlaylist = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
-        jMenuItem_openDefaultPlaylist = new javax.swing.JMenuItem();
         jMenuItem_openPlaylist = new javax.swing.JMenuItem();
+        jMenuItem_openPlaylists = new javax.swing.JMenuItem();
         jMenuItem_savePlaylist = new javax.swing.JMenuItem();
+        jMenuItem_saveAllPlaylists = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JSeparator();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
@@ -387,16 +393,13 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.LEFT);
 
-        jLabel10.setText(bundle.getString("DEFAULT_PLAYLIST_NAME")); // NOI18N
+        jButton2.setText(bundle.getString("RESTORE_DEFAULTS")); // NOI18N
 
-        jTextField_playlistName.setText(Settings.getInstance().getDefaultPlaylistName());
-        jTextField_playlistName.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                jTextField_playlistNameFocusLost(evt);
-            }
-        });
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(" Playlist(s) "));
 
-        jCheckBox_loadPlaylistStartup.setSelected(Settings.getInstance().isLoadPlaylistStartup());
+        jLabel6.setText("<html>Playlists located in the <i>playlist</i> folder in the <i>Ophelia</i> dir will be loaded.</html>");
+
+        jCheckBox_loadPlaylistStartup.setSelected(Settings.getInstance().isLoadPlaylistsStartup());
         jCheckBox_loadPlaylistStartup.setText(bundle.getString("INITIALIZE_DEFAULT_PLAYLIST")); // NOI18N
         jCheckBox_loadPlaylistStartup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -404,40 +407,54 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jButton2.setText(bundle.getString("RESTORE_DEFAULTS")); // NOI18N
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel6))
+                    .addComponent(jCheckBox_loadPlaylistStartup, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addComponent(jCheckBox_loadPlaylistStartup)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel6)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jCheckBox_loadPlaylistStartup, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addGap(4, 4, 4)
-                        .addComponent(jTextField_playlistName, javax.swing.GroupLayout.DEFAULT_SIZE, 222, Short.MAX_VALUE))
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(jTextField_playlistName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox_loadPlaylistStartup)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
                 .addComponent(jButton2)
                 .addContainerGap())
         );
 
         jTabbedPane2.addTab(bundle.getString("GENERAL_TAB"), jPanel5); // NOI18N
+
+        jButton3.setText(bundle.getString("RESTORE_DEFAULTS")); // NOI18N
+
+        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(" Window caption "));
 
         jLabel12.setText(bundle.getString("DEFAULT_WINDOWTITLE")); // NOI18N
 
@@ -456,6 +473,34 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField_windowTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 247, Short.MAX_VALUE))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jCheckBox_trackInWindow)))
+                .addContainerGap())
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(jTextField_windowTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBox_trackInWindow))
+        );
+
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder(" Icons "));
+
         jCheckBox_trayIcon.setSelected(Settings.getInstance().isTrayIcon());
         jCheckBox_trayIcon.setText(bundle.getString("DISPLAY_TRAY_ICON")); // NOI18N
         jCheckBox_trayIcon.addActionListener(new java.awt.event.ActionListener() {
@@ -472,7 +517,25 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jButton3.setText(bundle.getString("RESTORE_DEFAULTS")); // NOI18N
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCheckBox_trayIcon, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jCheckBox_trayClose, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addComponent(jCheckBox_trayIcon)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCheckBox_trayClose)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -481,35 +544,19 @@ public class Main extends javax.swing.JFrame implements Observer {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCheckBox_trayIcon)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jCheckBox_trayClose)
-                        .addGap(14, 14, 14))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jCheckBox_trackInWindow))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField_windowTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 241, Short.MAX_VALUE))
-                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
-                    .addComponent(jTextField_windowTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox_trackInWindow)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox_trayIcon)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jCheckBox_trayClose)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, Short.MAX_VALUE)
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addComponent(jButton3)
                 .addContainerGap())
         );
@@ -571,15 +618,15 @@ public class Main extends javax.swing.JFrame implements Observer {
                                     .addComponent(jLabel9))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jPasswordField_lastfmPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
-                                    .addComponent(jTextField_lastfmUsername, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)))))
+                                    .addComponent(jPasswordField_lastfmPassword, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+                                    .addComponent(jTextField_lastfmUsername, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)))))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addGap(10, 10, 10)
                                 .addComponent(jCheckBox_lastfmScrobble))
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE))))
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -608,7 +655,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
+            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -628,6 +675,8 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jDialog_playlistchoose.setTitle(bundle.getString("PLAYLIST_MANAGEMENT")); // NOI18N
 
+        jFileChooser_playlistfile.setCurrentDirectory(null);
+        jFileChooser_playlistfile.setMultiSelectionEnabled(true);
         jFileChooser_playlistfile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jFileChooser_playlistfileActionPerformed(evt);
@@ -647,7 +696,46 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jDialog_playlistchoose.getAccessibleContext().setAccessibleParent(null);
 
-        jButton1.setText("jButton1");
+        jDialog_newPlaylist.setTitle(bundle.getString("CHOOSE_MUSIC_TITLE")); // NOI18N
+
+        jTextField_newPlaylistName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField_newPlaylistNameKeyPressed(evt);
+            }
+        });
+
+        jLabel10.setText("Enter name for the new playlist:");
+
+        jButton_makeNewPlaylist.setText("Make new playlist");
+        jButton_makeNewPlaylist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_makeNewPlaylistActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jDialog_newPlaylistLayout = new javax.swing.GroupLayout(jDialog_newPlaylist.getContentPane());
+        jDialog_newPlaylist.getContentPane().setLayout(jDialog_newPlaylistLayout);
+        jDialog_newPlaylistLayout.setHorizontalGroup(
+            jDialog_newPlaylistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog_newPlaylistLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jDialog_newPlaylistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextField_newPlaylistName, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
+                    .addComponent(jLabel10)
+                    .addComponent(jButton_makeNewPlaylist, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
+        );
+        jDialog_newPlaylistLayout.setVerticalGroup(
+            jDialog_newPlaylistLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog_newPlaylistLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField_newPlaylistName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addComponent(jButton_makeNewPlaylist)
+                .addContainerGap())
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(Settings.getInstance().getWindowTitleText());
@@ -675,50 +763,17 @@ public class Main extends javax.swing.JFrame implements Observer {
         jLabel2.setText(bundle.getString("ADD...")); // NOI18N
 
         jProgressBar1.setForeground(new java.awt.Color(204, 0, 0));
-        jProgressBar1.setString("");
+        jProgressBar1.setString("...");
         jProgressBar1.setStringPainted(true);
 
         jLabel3.setText("...");
 
-        jTabbedPane1.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
-
-        jScrollPane1.setBorder(null);
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        jList_playlist1.setBackground(java.awt.SystemColor.control);
-        jList_playlist1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Click search field to view loaded playlist..." };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jList_playlist1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jList_playlist1.setSelectionBackground(new java.awt.Color(153, 0, 0));
-        jList_playlist1.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTabbedPane_playlists.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        jTabbedPane_playlists.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jList_playlist1MouseClicked(evt);
+                jTabbedPane_playlistsMouseClicked(evt);
             }
         });
-        jList_playlist1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jList_playlist1KeyPressed(evt);
-            }
-        });
-        jScrollPane1.setViewportView(jList_playlist1);
-
-        jTabbedPane1.addTab("Playlist 1", jScrollPane1);
-
-        jScrollPane2.setBorder(null);
-        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        jList_playlist2.setBackground(java.awt.SystemColor.control);
-        jList_playlist2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jList_playlist2MouseClicked(evt);
-            }
-        });
-        jScrollPane2.setViewportView(jList_playlist2);
-
-        jTabbedPane1.addTab("Playlist 2", jScrollPane2);
 
         jButton_play.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/play.gif"))); // NOI18N
         jButton_play.setText(bundle.getString("PLAY")); // NOI18N
@@ -773,7 +828,7 @@ public class Main extends javax.swing.JFrame implements Observer {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane_playlists, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -812,7 +867,7 @@ public class Main extends javax.swing.JFrame implements Observer {
                     .addComponent(jButton_stop, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
+                .addComponent(jTabbedPane_playlists, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
@@ -827,6 +882,7 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jMenu_addFiles.setText(bundle.getString("FILE")); // NOI18N
 
+        jMenuItem_addFiles.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/add.gif"))); // NOI18N
         jMenuItem_addFiles.setText(bundle.getString("ADD_FILES")); // NOI18N
         jMenuItem_addFiles.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -835,6 +891,7 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
         jMenu_addFiles.add(jMenuItem_addFiles);
 
+        jMenuItem_addDirectory.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/open.gif"))); // NOI18N
         jMenuItem_addDirectory.setText(bundle.getString("ADD_DIRS")); // NOI18N
         jMenuItem_addDirectory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -842,15 +899,16 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
         jMenu_addFiles.add(jMenuItem_addDirectory);
-        jMenu_addFiles.add(jSeparator3);
 
-        jMenuItem_openDefaultPlaylist.setText(bundle.getString("OPEN_DEF_PLAYLIST")); // NOI18N
-        jMenuItem_openDefaultPlaylist.addActionListener(new java.awt.event.ActionListener() {
+        jMenuItem_newPlaylist.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem_newPlaylist.setText(bundle.getString("NEW_PLAYLIST")); // NOI18N
+        jMenuItem_newPlaylist.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem_openDefaultPlaylistActionPerformed(evt);
+                jMenuItem_newPlaylistActionPerformed(evt);
             }
         });
-        jMenu_addFiles.add(jMenuItem_openDefaultPlaylist);
+        jMenu_addFiles.add(jMenuItem_newPlaylist);
+        jMenu_addFiles.add(jSeparator3);
 
         jMenuItem_openPlaylist.setText(bundle.getString("OPEN_PLAYLIST")); // NOI18N
         jMenuItem_openPlaylist.addActionListener(new java.awt.event.ActionListener() {
@@ -860,6 +918,14 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
         jMenu_addFiles.add(jMenuItem_openPlaylist);
 
+        jMenuItem_openPlaylists.setText(bundle.getString("OPEN_SAVED_PLAYLISTS")); // NOI18N
+        jMenuItem_openPlaylists.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_openPlaylistsActionPerformed(evt);
+            }
+        });
+        jMenu_addFiles.add(jMenuItem_openPlaylists);
+
         jMenuItem_savePlaylist.setText(bundle.getString("SAVE_PLAYLIST")); // NOI18N
         jMenuItem_savePlaylist.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -867,6 +933,14 @@ public class Main extends javax.swing.JFrame implements Observer {
             }
         });
         jMenu_addFiles.add(jMenuItem_savePlaylist);
+
+        jMenuItem_saveAllPlaylists.setText(bundle.getString("SAVE_ALL_PLAYLISTS")); // NOI18N
+        jMenuItem_saveAllPlaylists.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_saveAllPlaylistsActionPerformed(evt);
+            }
+        });
+        jMenu_addFiles.add(jMenuItem_saveAllPlaylists);
         jMenu_addFiles.add(jSeparator4);
 
         jMenuItem10.setText(bundle.getString("QUIT")); // NOI18N
@@ -912,11 +986,18 @@ public class Main extends javax.swing.JFrame implements Observer {
 
         jMenu5.setText(bundle.getString("PLAYBACK")); // NOI18N
 
-        jMenuItem_play.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, 0));
+        jMenuItem_play.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem_play.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/play.gif"))); // NOI18N
         jMenuItem_play.setText(bundle.getString("PLAY")); // NOI18N
+        jMenuItem_play.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_playActionPerformed(evt);
+            }
+        });
         jMenu5.add(jMenuItem_play);
 
-        jMenuItem_pause.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0));
+        jMenuItem_pause.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem_pause.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/pause.gif"))); // NOI18N
         jMenuItem_pause.setText(bundle.getString("PAUSE")); // NOI18N
         jMenuItem_pause.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -925,7 +1006,8 @@ public class Main extends javax.swing.JFrame implements Observer {
         });
         jMenu5.add(jMenuItem_pause);
 
-        jMenuItem_stop.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, 0));
+        jMenuItem_stop.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem_stop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ophelia/gui/stop.gif"))); // NOI18N
         jMenuItem_stop.setText(bundle.getString("STOP")); // NOI18N
         jMenuItem_stop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1013,23 +1095,10 @@ private void jButton_addFilesActionPerformed(java.awt.event.ActionEvent evt) {//
 }//GEN-LAST:event_jButton_addFilesActionPerformed
 
 private void jFileChooser_musicfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFileChooser_musicfileActionPerformed
-    plController.addPlaylistTracks(jFileChooser_musicfile.getSelectedFiles());
+    plController.addPlaylistTracks(jTabbedPane_playlists.getTitleAt(jTabbedPane_playlists.getSelectedIndex()), jFileChooser_musicfile.getSelectedFiles());
     new Thread(new GUIAnimation(1)).start();
     jDialog_musicchoose.setVisible(false);
 }//GEN-LAST:event_jFileChooser_musicfileActionPerformed
-
-private void jList_playlist1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList_playlist1MouseClicked
-    if (evt.getClickCount() == 2) {
-        TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
-        mpController.playTrack(selectedTrack.getAbsoluteFile().getAbsolutePath());
-        //this thread will update the progressbar every 1 second
-        if (progressbarAnimation != null) {
-            progressbarAnimation.stop();
-        }
-        progressbarAnimation = new GUIAnimation(2);
-        progressAnimationThread.submit(progressbarAnimation);
-    }
-}//GEN-LAST:event_jList_playlist1MouseClicked
 
 private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
     mpController.pauseTrack();
@@ -1049,10 +1118,6 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     jFrame_about.setVisible(true);
 }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-private void jList_playlist2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList_playlist2MouseClicked
-// TODO add your handling code here:
-}//GEN-LAST:event_jList_playlist2MouseClicked
-
 private void jMenuItem_pauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_pauseActionPerformed
     mpController.pauseTrack();
 }//GEN-LAST:event_jMenuItem_pauseActionPerformed
@@ -1066,7 +1131,7 @@ private void jMenuItem_stopActionPerformed(java.awt.event.ActionEvent evt) {//GE
 
 private void jMenuItem_clearplaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_clearplaylistActionPerformed
     plController.clearPlaylist();
-    jList_playlist1.setListData(new String[0]);
+    ((JList) (jTabbedPane_playlists.getSelectedComponent())).setListData(new String[0]);
 }//GEN-LAST:event_jMenuItem_clearplaylistActionPerformed
 
 private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
@@ -1080,10 +1145,6 @@ private void jMenuItem_addFilesActionPerformed(java.awt.event.ActionEvent evt) {
 private void jMenuItem10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem10ActionPerformed
     System.exit(0);
 }//GEN-LAST:event_jMenuItem10ActionPerformed
-
-private void jTextField_playlistNameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField_playlistNameFocusLost
-    Settings.getInstance().setDefaultPlaylistName(jTextField_playlistName.getText());
-}//GEN-LAST:event_jTextField_playlistNameFocusLost
 
 private void jCheckBox_trayIconActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_trayIconActionPerformed
     Settings.getInstance().setTrayIcon(jCheckBox_trayIcon.isSelected());
@@ -1132,10 +1193,10 @@ private void jMenuItem_openPlaylistActionPerformed(java.awt.event.ActionEvent ev
 
 private void jFileChooser_playlistfileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFileChooser_playlistfileActionPerformed
     if (jFileChooser_playlistfile.getDialogType() == JFileChooser.OPEN_DIALOG) {
-        plController.loadPlaylistFile(jFileChooser_playlistfile.getSelectedFile().getPath());
+        plController.loadPlaylists(jFileChooser_playlistfile.getSelectedFile().getAbsolutePath());
         new Thread(new GUIAnimation(1)).start();
     } else if (jFileChooser_playlistfile.getDialogType() == JFileChooser.SAVE_DIALOG) {
-        plController.savePlaylistFile(jFileChooser_playlistfile.getSelectedFile().getPath());
+        plController.savePlaylist(jFileChooser_playlistfile.getSelectedFile().getPath());
     }
     jDialog_playlistchoose.setVisible(false);
 }//GEN-LAST:event_jFileChooser_playlistfileActionPerformed
@@ -1149,7 +1210,8 @@ private void jCheckBox_trackInWindowActionPerformed(java.awt.event.ActionEvent e
 }//GEN-LAST:event_jCheckBox_trackInWindowActionPerformed
 
 private void jTextField_searchCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_jTextField_searchCaretUpdate
-    plController.searchTracks(jTextField_search.getText());
+    plController.searchTracks(jTabbedPane_playlists.getTitleAt(jTabbedPane_playlists.getSelectedIndex()), jTextField_search.getText());
+    System.out.println(jTabbedPane_playlists.getTitleAt(jTabbedPane_playlists.getSelectedIndex()));
 }//GEN-LAST:event_jTextField_searchCaretUpdate
 
 private void jCheckBoxMenuItem_lastfmScrobbleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem_lastfmScrobbleActionPerformed
@@ -1158,28 +1220,15 @@ private void jCheckBoxMenuItem_lastfmScrobbleActionPerformed(java.awt.event.Acti
     jCheckBox_lastfmScrobble.setEnabled(jCheckBoxMenuItem_lastfmScrobble.isSelected());
 }//GEN-LAST:event_jCheckBoxMenuItem_lastfmScrobbleActionPerformed
 
-private void jList_playlist1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jList_playlist1KeyPressed
-    if (evt.getKeyCode() == KeyEvent.VK_SPACE) {
-        mpController.pauseTrack();
-    } else if (evt.getKeyCode() == KeyEvent.VK_CONTROL && evt.getKeyCode() == KeyEvent.VK_DELETE) {
-        plController.clearPlaylist();
-    } else if (evt.getKeyCode() == KeyEvent.VK_X) {
-        TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
-        mpController.playTrack(selectedTrack.getAbsoluteFile().getAbsolutePath());
-    } else if (evt.getKeyCode() == KeyEvent.VK_Z) {
-        mpController.stopTrack();
-    } else if (evt.getKeyCode() == KeyEvent.VK_CONTROL && evt.getKeyCode() == KeyEvent.VK_P) {
-        jFrame_settings.setVisible(true);
-    }
-}//GEN-LAST:event_jList_playlist1KeyPressed
-
 private void jButton_addDirectoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_addDirectoryActionPerformed
     jFileChooser_musicfile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     jDialog_musicchoose.setVisible(true);
 }//GEN-LAST:event_jButton_addDirectoryActionPerformed
 
 private void jButton_playActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_playActionPerformed
-    TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
+    JScrollPane sp = (JScrollPane) jTabbedPane_playlists.getSelectedComponent();
+    JList pl = (JList) sp.getViewport().getComponent(0);
+    StandardTrack selectedTrack = (StandardTrack) pl.getSelectedValue();
     mpController.playTrack(selectedTrack.getAbsoluteFile().getAbsolutePath());
     //this thread will update the progressbar every 1 second
     if (progressbarAnimation != null) {
@@ -1209,13 +1258,76 @@ private void jMenuItem_checkVersionActionPerformed(java.awt.event.ActionEvent ev
 }//GEN-LAST:event_jMenuItem_checkVersionActionPerformed
 
 private void jCheckBox_loadPlaylistStartupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox_loadPlaylistStartupActionPerformed
-    Settings.getInstance().setLoadPlaylistStartup(jCheckBox_loadPlaylistStartup.isSelected());
+    Settings.getInstance().setLoadPlaylistsStartup(jCheckBox_loadPlaylistStartup.isSelected());
 }//GEN-LAST:event_jCheckBox_loadPlaylistStartupActionPerformed
 
-private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_openDefaultPlaylistActionPerformed
-    plController.loadPlaylistFile(Settings.getInstance().getDefaultPlaylistName());
+private void jMenuItem_newPlaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_newPlaylistActionPerformed
+    jDialog_newPlaylist.setVisible(true);
+}//GEN-LAST:event_jMenuItem_newPlaylistActionPerformed
+
+private void jButton_makeNewPlaylistActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_makeNewPlaylistActionPerformed
+    jDialog_newPlaylist.setVisible(false);
+    JScrollPane sp = new JScrollPane();
+    sp.setBorder(null);
+    sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    jTabbedPane_playlists.add(jTextField_newPlaylistName.getText(), sp);
+    jTabbedPane_playlists.setSelectedIndex(jTabbedPane_playlists.getTabCount() -1);
+}//GEN-LAST:event_jButton_makeNewPlaylistActionPerformed
+
+private void jTextField_newPlaylistNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField_newPlaylistNameKeyPressed
+    if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+        jDialog_newPlaylist.setVisible(false);
+        JScrollPane sp = new JScrollPane();
+        sp.setBorder(null);
+        sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jTabbedPane_playlists.add(jTextField_newPlaylistName.getText(), sp);
+    }
+}//GEN-LAST:event_jTextField_newPlaylistNameKeyPressed
+
+private void jMenuItem_saveAllPlaylistsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_saveAllPlaylistsActionPerformed
+    plController.savePlaylists();
+}//GEN-LAST:event_jMenuItem_saveAllPlaylistsActionPerformed
+
+private void jMenuItem_playActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_playActionPerformed
+    JScrollPane sp = (JScrollPane) jTabbedPane_playlists.getSelectedComponent();
+    JList pl = (JList) sp.getViewport().getComponent(0);
+    StandardTrack selectedTrack = (StandardTrack) pl.getSelectedValue();
+    mpController.playTrack(selectedTrack.getAbsoluteFile().getAbsolutePath());
+    //this thread will update the progressbar every 1 second
+    if (progressbarAnimation != null) {
+        progressbarAnimation.stop();
+    }
+    progressbarAnimation = new GUIAnimation(2);
+    progressAnimationThread.submit(progressbarAnimation);
+}//GEN-LAST:event_jMenuItem_playActionPerformed
+
+private void jMenuItem_openPlaylistsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_openPlaylistsActionPerformed
+    plController.loadPlaylists();
     new Thread(new GUIAnimation(1)).start();
-}//GEN-LAST:event_jMenuItem_openDefaultPlaylistActionPerformed
+}//GEN-LAST:event_jMenuItem_openPlaylistsActionPerformed
+
+private void jTabbedPane_playlistsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabbedPane_playlistsMouseClicked
+    if (evt.getClickCount() == 2) {
+        plController.clearPlaylist(jTabbedPane_playlists.getSelectedComponent().getName());
+        jTabbedPane_playlists.removeTabAt(jTabbedPane_playlists.getSelectedIndex());
+    }
+}//GEN-LAST:event_jTabbedPane_playlistsMouseClicked
+
+    /* when the currently selected playlist is doubleclicked with mouse */
+    private void playlistMouseClicked(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            JScrollPane sp = (JScrollPane) jTabbedPane_playlists.getSelectedComponent();
+            JList pl = (JList) sp.getViewport().getComponent(0);
+            StandardTrack selectedTrack = (StandardTrack) pl.getSelectedValue();
+            mpController.playTrack(selectedTrack.getAbsoluteFile().getAbsolutePath());
+            //this thread will update the progressbar every 1 second
+            if (progressbarAnimation != null) {
+                progressbarAnimation.stop();
+            }
+            progressbarAnimation = new GUIAnimation(2);
+            progressAnimationThread.submit(progressbarAnimation);
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -1230,13 +1342,13 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton_addDirectory;
     private javax.swing.JButton jButton_addFiles;
     private javax.swing.JButton jButton_checkAuthentication;
+    private javax.swing.JButton jButton_makeNewPlaylist;
     private javax.swing.JButton jButton_play;
     private javax.swing.JButton jButton_stop;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem2;
@@ -1247,6 +1359,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JCheckBox jCheckBox_trayClose;
     private javax.swing.JCheckBox jCheckBox_trayIcon;
     private javax.swing.JDialog jDialog_musicchoose;
+    private javax.swing.JDialog jDialog_newPlaylist;
     private javax.swing.JDialog jDialog_playlistchoose;
     private javax.swing.JFileChooser jFileChooser_musicfile;
     private javax.swing.JFileChooser jFileChooser_playlistfile;
@@ -1261,6 +1374,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -1268,8 +1382,6 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JLabel jLabel_linkHomepageOphelia;
     private javax.swing.JLabel jLabel_playlistcount;
     private javax.swing.JLabel jLabel_version;
-    private javax.swing.JList jList_playlist1;
-    private javax.swing.JList jList_playlist2;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
@@ -1282,11 +1394,13 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JMenuItem jMenuItem_addFiles;
     private javax.swing.JMenuItem jMenuItem_checkVersion;
     private javax.swing.JMenuItem jMenuItem_clearplaylist;
-    private javax.swing.JMenuItem jMenuItem_openDefaultPlaylist;
+    private javax.swing.JMenuItem jMenuItem_newPlaylist;
     private javax.swing.JMenuItem jMenuItem_openPlaylist;
+    private javax.swing.JMenuItem jMenuItem_openPlaylists;
     private javax.swing.JMenuItem jMenuItem_pause;
     private javax.swing.JMenuItem jMenuItem_play;
     private javax.swing.JMenuItem jMenuItem_removetrack;
+    private javax.swing.JMenuItem jMenuItem_saveAllPlaylists;
     private javax.swing.JMenuItem jMenuItem_savePlaylist;
     private javax.swing.JMenuItem jMenuItem_stop;
     private javax.swing.JMenu jMenu_addFiles;
@@ -1296,6 +1410,9 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JPanel jPanel_about;
     private javax.swing.JPanel jPanel_authors;
     private javax.swing.JPanel jPanel_license;
@@ -1307,12 +1424,9 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem3;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem4;
     private javax.swing.JRadioButtonMenuItem jRadioButtonMenuItem5;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -1320,14 +1434,14 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JToolBar.Separator jSeparator7;
-    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JTabbedPane jTabbedPane_playlists;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextArea jTextArea3;
     private javax.swing.JTextField jTextField_lastfmUsername;
-    private javax.swing.JTextField jTextField_playlistName;
+    private javax.swing.JTextField jTextField_newPlaylistName;
     private javax.swing.JTextField jTextField_search;
     private javax.swing.JTextField jTextField_windowTitle;
     private javax.swing.JToolBar jToolBar_statusbar;
@@ -1382,17 +1496,43 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
         }
     }
 
+    private void setupPlaylist(SinglePlaylist playlist) {
+        JList pl = new JList(playlist.getPlaylistTracks().toArray(new StandardTrack[0]));
+        boolean tabExists = false;
+        for (int i = 0; i < jTabbedPane_playlists.getTabCount(); i++) {
+            if (jTabbedPane_playlists.getTitleAt(i).equals(playlist.getPlaylistName())) {
+                ((JScrollPane) (jTabbedPane_playlists.getComponent(i))).getViewport().setView(pl);
+                tabExists = true;
+            }
+        }
+        if (!tabExists) {
+            System.out.println("ny tab!");
+            pl = new JList((Vector)playlist.getPlaylistTracks());
+            pl.addMouseListener(new java.awt.event.MouseAdapter() {
+
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    playlistMouseClicked(evt);
+                }
+            });
+            JScrollPane sp = new JScrollPane();
+            sp.setBorder(null);
+            sp.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            sp.setViewportView(pl);
+            jTabbedPane_playlists.add(playlist.getPlaylistName(), sp);
+        }
+    }
+
     /**
-     * we use observer-pattern when updating our lists in gui, playlist etc. 
+     * we use observer-pattern when updating our lists in gui, playlist etc.
      */
     public void update(Observable o, Object arg) {
-        if (o instanceof Playlist) { /* its playlist array data */
-            jList_playlist1.setListData((Vector) arg);
+        if (o instanceof Playlist) { /* its data from the Playlist */
             jLabel_playlistcount.setText(plController.getTrackCount() + " " + java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("TRACKS") + " (" + plController.getMP3TrackCount() + " MP3, " + plController.getFLACTrackCount() + " FLAC)");
+            setupPlaylist((SinglePlaylist) arg);
         } else if (o instanceof ScrobbleStatus) {
             jLabel_lastfmLastScrobble.setText(ScrobbleStatus.getInstance().toString());
-            String toolTip = java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("YOUR_LAST_SCROBBLE_TO_LAST.FM") + " " + ScrobbleStatus.getInstance().getLastPlayed();
-            jLabel_lastfmLastScrobble.setToolTipText(toolTip);
+            jLabel_lastfmLastScrobble.setToolTipText(java.util.ResourceBundle.getBundle("ophelia/gui/localization/MainResources").getString("YOUR_LAST_SCROBBLE_TO_LAST.FM") + " " + ScrobbleStatus.getInstance().getLastPlayed());
         }
     }
 
@@ -1424,10 +1564,12 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
          * playlist
          */
         public void playingAnimation() {
-            TrackWithID3 selectedTrack = (TrackWithID3) jList_playlist1.getSelectedValue();
-            TrackWithID3 nextTrack = null;
-            if (jList_playlist1.getSelectedIndex() != jList_playlist1.getModel().getSize() - 1) {
-                nextTrack = (TrackWithID3) jList_playlist1.getModel().getElementAt(jList_playlist1.getSelectedIndex() + 1);
+            JScrollPane sp = (JScrollPane) jTabbedPane_playlists.getSelectedComponent();
+            JList pl = (JList) sp.getViewport().getView();
+            StandardTrack selectedTrack = (StandardTrack) pl.getSelectedValue();
+            StandardTrack nextTrack = null;
+            if (pl.getSelectedIndex() != pl.getModel().getSize() - 1) {
+                nextTrack = (StandardTrack) pl.getModel().getElementAt(pl.getSelectedIndex() + 1);
             }
             jProgressBar1.setString(selectedTrack.getOSDStatus());
             trayIcon.setToolTip(selectedTrack.getOSDStatus());
@@ -1444,7 +1586,7 @@ private void jMenuItem_openDefaultPlaylistActionPerformed(java.awt.event.ActionE
                 /* continous play */
                 if (!stop && nextTrack != null) {
                     mpController.playTrack(nextTrack.getAbsoluteFile().getAbsolutePath());
-                    jList_playlist1.setSelectedValue(nextTrack, true);
+                    pl.setSelectedValue(nextTrack, true);
                     if (progressbarAnimation != null) {
                         progressbarAnimation.stop();
                     }

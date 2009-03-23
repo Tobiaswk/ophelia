@@ -48,8 +48,7 @@ public class Settings {
     private String lasfmPassword = "";
 
     /* ophelia configuration data */
-    private String defaultPlaylistName = "playlist.txt";
-    private boolean loadPlaylistStartup = true;
+    private boolean loadPlaylistsStartup = true;
     private boolean trayIcon = false;
     private boolean trayMinimize = false;
     private boolean trayClose = false;
@@ -85,21 +84,12 @@ public class Settings {
         saveLocalSettings();
     }
 
-    public String getDefaultPlaylistName() {
-        return defaultPlaylistName;
+    public boolean isLoadPlaylistsStartup() {
+        return loadPlaylistsStartup;
     }
 
-    public void setDefaultPlaylistName(String defaultPlaylistName) {
-        this.defaultPlaylistName = defaultPlaylistName;
-        saveLocalSettings();
-    }
-
-    public boolean isLoadPlaylistStartup() {
-        return loadPlaylistStartup;
-    }
-
-    public void setLoadPlaylistStartup(boolean loadPlaylistStartup) {
-        this.loadPlaylistStartup = loadPlaylistStartup;
+    public void setLoadPlaylistsStartup(boolean loadPlaylistStartup) {
+        this.loadPlaylistsStartup = loadPlaylistStartup;
         saveLocalSettings();
     }
 
@@ -240,8 +230,7 @@ public class Settings {
                 "   <lastfmScrobble>" + lastfmScrobble + "</lastfmScrobble>\n" +
                 "   <lastfmUsername>" + lasfmUsername + "</lastfmUsername>\n" +
                 "   <lastfmPassword>" + lasfmPassword + "</lastfmPassword>\n" +
-                "   <defaultPlaylistName>" + defaultPlaylistName + "</defaultPlaylistName>\n" +
-                "   <loadPlaylistStartup>" + loadPlaylistStartup + "</loadPlaylistStartup>\n" +
+                "   <loadPlaylistStartup>" + loadPlaylistsStartup + "</loadPlaylistStartup>\n" +
                 "   <trayIcon>" + trayIcon + "</trayIcon>\n" +
                 "   <trayMinimize>" + trayMinimize + "</trayMinimize>\n" +
                 "   <trayClose>" + trayClose + "</trayClose>\n" +
@@ -257,8 +246,7 @@ public class Settings {
             this.lastfmScrobble = Boolean.parseBoolean(getSetting("lastfmScrobble"));
             this.lasfmUsername = getSetting("lastfmUsername");
             this.lasfmPassword = getSetting("lastfmPassword");
-            this.defaultPlaylistName = getSetting("defaultPlaylistName");
-            this.loadPlaylistStartup = Boolean.parseBoolean(getSetting("loadPlaylistStartup"));
+            this.loadPlaylistsStartup = Boolean.parseBoolean(getSetting("loadPlaylistStartup"));
             this.trayIcon = Boolean.parseBoolean(getSetting("trayIcon"));
             this.trayMinimize = Boolean.parseBoolean(getSetting("trayMinimize"));
             this.trayClose = Boolean.parseBoolean(getSetting("trayClose"));

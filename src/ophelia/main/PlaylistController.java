@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package ophelia.main;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.List;
 
 /**
  *
@@ -39,16 +39,20 @@ public class PlaylistController {
         return playlist;
     }
 
-    public void addPlaylistTracks(File[] files) {
-        playlist.addTracks(files);
+    public void addPlaylistTracks(String playlistName, File[] files) {
+        playlist.addTracks(playlistName, files);
     }
     
     public int getTrackCount() {
         return playlist.getTrackCount();
     }
 
-    public Vector getPlaylistTracks() {
-        return playlist.getTracks();
+    public List getPlaylistTracks(String playlistName) {
+        return playlist.getTracks(playlistName);
+    }
+
+    public String[] getPlaylistNames() {
+        return playlist.getPlaylistNames();
     }
 
     public int getMP3TrackCount() {
@@ -64,18 +68,30 @@ public class PlaylistController {
     }
 
     public void clearPlaylist() {
-        playlist.clearPlaylist();
+        playlist.clearPlaylists();
     }
 
-    public void searchTracks(String keyword) {
-        playlist.searchTracks(keyword);
+    public void clearPlaylist(String playlistName) {
+        playlist.clearPlaylist(playlistName);
     }
 
-    public void savePlaylistFile(String playlistFilename) {
+    public void searchTracks(String playlistName, String keyword) {
+        playlist.searchTracks(playlistName, keyword);
+    }
+
+    public void savePlaylists() {
+        playlist.savePlaylists();
+    }
+
+    public void savePlaylist(String playlistFilename) {
         playlist.savePlaylistFile(playlistFilename);
     }
 
-    public void loadPlaylistFile(String playlistFilename) {
-        playlist.loadPlaylistFile(playlistFilename);
+    public void loadPlaylists() {
+        playlist.loadPlaylists();
+    }
+
+    public void loadPlaylists(String playlistFilename) {
+        playlist.loadPlaylists(playlistFilename);
     }
 }
